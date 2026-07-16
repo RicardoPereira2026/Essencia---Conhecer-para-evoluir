@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Essência — Conhecer para Evoluir</title>
+<style>
+:root{
+  --bg:#f2f4f8; --card:#fff; --ink:#1e2433; --muted:#69707f; --line:#e3e6ec;
+  --ex:#e05252; --cm:#e8a93c; --pl:#35a374; --an:#4478dd;
+  --accent:#26334d; --soft:#eef2fa;
+}
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:20px;}
+.wrap{max-width:980px;margin:0 auto;}
+h1{font-size:24px;margin:0 0 4px;}
+h2{font-size:18px;margin:0 0 10px;}
+h3{font-size:15px;margin:16px 0 6px;}
+.sub{color:var(--muted);font-size:14px;margin-bottom:18px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:16px;box-shadow:0 1px 3px rgba(20,30,60,.05);}
+.screen{display:none;}
+.screen.active{display:block;}
+button{background:var(--accent);color:#fff;border:none;padding:11px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin:4px 6px 4px 0;font-family:inherit;}
+button.sec{background:#fff;color:var(--accent);border:1.5px solid var(--accent);}
+button.mini{padding:5px 10px;font-size:12px;border-radius:6px;}
+button.danger{background:#fff;color:var(--ex);border:1.5px solid var(--ex);}
+button:hover{opacity:.88;}
+input[type=text],input[type=password],input[type=email],select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:10px;background:#fff;}
+textarea{min-height:70px;resize:vertical;}
+label{display:block;font-weight:600;font-size:13px;margin-bottom:5px;color:var(--accent);}
+.big-btn{display:block;width:100%;text-align:left;padding:18px;font-size:16px;margin:10px 0;border-radius:12px;}
+.big-btn small{display:block;font-weight:400;font-size:12.5px;opacity:.8;margin-top:3px;}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700;color:#fff;}
+.row{display:flex;gap:14px;flex-wrap:wrap;}
+.col{flex:1;min-width:260px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top;}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.4px;}
+.q-card{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px;background:#fafbfd;}
+.q-card p{font-weight:600;margin:0 0 10px;font-size:14.5px;}
+.opt{display:block;padding:9px 12px;margin:6px 0;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;font-size:13.5px;background:#fff;transition:all .12s;}
+.opt:hover{border-color:var(--accent);}
+.opt.sel{border-color:var(--accent);background:var(--soft);font-weight:600;}
+.progress{position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5;}
+.progress-bar{height:8px;background:#e0e4ec;border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--pl);border-radius:4px;transition:width .2s;}
+.hero{border-radius:14px;padding:26px;color:#fff;margin-bottom:16px;}
+.hero h2{font-size:22px;margin:0 0 2px;}
+.hero .apelido{font-size:14px;opacity:.92;}
+.chips{margin-top:10px;}
+.chip{display:inline-block;background:rgba(255,255,255,.22);padding:4px 12px;border-radius:20px;font-size:12px;margin:2px 4px 2px 0;}
+.bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px;}
+.bar-label{width:130px;color:var(--muted);}
+.bar-bg{flex:1;background:#eceff4;border-radius:5px;height:16px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;transition:width .4s;}
+ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
+.box{border-radius:10px;padding:14px 16px;font-size:13.5px;margin:10px 0;line-height:1.55;}
+.box.gold{background:#fdf8ec;border:1px solid #eeddb0;}
+.box.green{background:#eef8f2;border:1px solid #bfe3cf;}
+.box.blue{background:#eef3fd;border:1px solid #c5d7f7;}
+.box.red{background:#fdeeee;border:1px solid #f2c6c6;}
+.box.gray{background:#f4f5f8;border:1px solid var(--line);}
+.donut{width:180px;height:180px;border-radius:50%;margin:10px auto;}
+.legend{font-size:13px;line-height:1.9;}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:12px;}
+.p-card{border-radius:12px;padding:16px;color:#fff;font-size:13px;}
+.p-card h4{margin:0 0 2px;font-size:15.5px;}
+.p-card .role{opacity:.85;font-size:11.5px;margin-bottom:8px;}
+.p-card ul{margin:6px 0 0 16px;padding:0;line-height:1.5;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.tab{padding:9px 16px;border-radius:8px;background:#fff;border:1.5px solid var(--line);cursor:pointer;font-size:13.5px;font-weight:600;color:var(--muted);}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.tabpanel{display:none;}
+.tabpanel.active{display:block;}
+.status-ok{color:var(--pl);font-weight:700;}
+.status-pend{color:var(--cm);font-weight:700;}
+.pair-card{border:1px solid var(--line);border-radius:12px;padding:18px;margin:10px 0;background:#fff;}
+.vs{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.insight{background:#eef4ff;border:1px solid #c9dbfb;border-radius:10px;padding:13px 15px;font-size:13px;margin:12px 0;line-height:1.55;}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:8px;font-size:13.5px;display:none;z-index:99;}
+.gauge{font-size:13px;margin:8px 0;}
+.mystery{background:linear-gradient(135deg,#3a3f52,#20242f);color:#fff;border-radius:14px;padding:24px;margin:12px 0;}
+.mystery h3{margin-top:0;}
+@media print{
+  body{background:#fff;padding:0;}
+  .no-print{display:none !important;}
+  .card{border:none;box-shadow:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ==================== HOME ==================== -->
+<div class="screen active" id="scr-home">
+  <h1>🧭 Essência <span id="cloudBadge" class="tag" style="background:#8a93a5;vertical-align:middle;">💾 modo local</span></h1>
+  <div class="sub"><b>Conhecer para evoluir.</b> Mapa de perfis comportamentais para conexão de equipe — descubra seus superpoderes e como você funciona melhor.</div>
+  <div class="card">
+    <button class="big-btn" onclick="irParaResponder()">📝 Responder meu questionário
+      <small>10 perguntas rápidas sobre você (sem resposta certa ou errada). Ao final, você recebe sua devolutiva na hora.</small>
+    </button>
+    <button class="big-btn sec" onclick="pedirPin()">🔐 Área do Gestor
+      <small>Cadastro, convites por e-mail, relatórios completos com radar, mapa do time e dinâmicas de grupo.</small>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== SELECIONAR COLABORADOR ==================== -->
+<div class="screen" id="scr-quem">
+  <div class="card">
+    <h2>Quem é você?</h2>
+    <div class="sub">Selecione seu nome para começar.</div>
+    <div id="listaQuem"></div>
+    <button class="sec" onclick="show('scr-home')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ==================== QUIZ ==================== -->
+<div class="screen" id="scr-quiz">
+  <div class="progress no-print"><div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div></div>
+  <div class="card">
+    <h2 id="quizTitulo"></h2>
+    <div class="sub">Responda de forma espontânea, pensando em como você é fora do trabalho. As perguntas mudam a cada aplicação — não existe resposta certa, existe você. 😉</div>
+    <div id="quizPerguntas"></div>
+    <button onclick="enviarQuiz()">Ver minha devolutiva ✨</button>
+    <button class="sec" onclick="show('scr-home')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ==================== DEVOLUTIVA ==================== -->
+<div class="screen" id="scr-devolutiva">
+  <div id="devConteudo"></div>
+  <div class="no-print">
+    <button onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+    <button class="sec" onclick="show('scr-home')">🏠 Início</button>
+  </div>
+</div>
+
+<!-- ==================== PIN ==================== -->
+<div class="screen" id="scr-pin">
+  <div class="card" style="max-width:420px;margin:40px auto;">
+    <h2 id="pinTitulo">🔐 Área do Gestor</h2>
+    <div class="sub" id="pinSub"></div>
+    <input type="password" id="pinInput" placeholder="PIN (4+ dígitos)" maxlength="12">
+    <div id="pinConfirmWrap" style="display:none;">
+      <input type="password" id="pinConfirm" placeholder="Confirme o PIN" maxlength="12">
+    </div>
+    <button onclick="validarPin()">Entrar</button>
+    <button class="sec" onclick="show('scr-home')">Voltar</button>
+  </div>
+</div>
+
+<!-- ==================== ÁREA DO GESTOR ==================== -->
+<div class="screen" id="scr-gestor">
+  <div class="topbar no-print">
+    <h1>🛠️ Área do Gestor</h1>
+    <div>
+      <button class="mini sec" onclick="show('scr-home')">🏠 Início</button>
+      <button class="mini sec" onclick="bloquear()">🔒 Bloquear</button>
+    </div>
+  </div>
+  <div class="tabs no-print">
+    <div class="tab active" data-tab="tab-colabs" onclick="abaGestor(this)">👥 Colaboradores</div>
+    <div class="tab" data-tab="tab-relatorio" onclick="abaGestor(this)">📊 Relatório Individual</div>
+    <div class="tab" data-tab="tab-mapa" onclick="abaGestor(this)">🗺️ Mapa do Time</div>
+    <div class="tab" data-tab="tab-duplas" onclick="abaGestor(this)">🤝 Duplas & Convivência</div>
+    <div class="tab" data-tab="tab-dinamica" onclick="abaGestor(this)">🎲 Dinâmicas</div>
+    <div class="tab" data-tab="tab-backup" onclick="abaGestor(this)">💾 Backup</div>
+  </div>
+
+  <!-- TAB: COLABORADORES -->
+  <div class="tabpanel active" id="tab-colabs">
+    <div class="card">
+      <h2>Cadastrar colaborador</h2>
+      <div class="row">
+        <div class="col"><label>Nome</label><input type="text" id="novoNome" placeholder="Ex: Ana Souza"></div>
+        <div class="col"><label>Cargo</label><input type="text" id="novoCargo" placeholder="Ex: Analista de Operações"></div>
+        <div class="col"><label>E-mail corporativo</label><input type="email" id="novoEmail" placeholder="ana.souza@empresa.com"></div>
+      </div>
+      <button onclick="cadastrar()">➕ Cadastrar</button>
+    </div>
+    <div class="card">
+      <h2>Time cadastrado</h2>
+      <div class="sub">✉️ <b>Convidar</b> abre seu e-mail com a mensagem e o link prontos — é só enviar. <i>Importante:</i> com a nuvem configurada, envie os convites a partir da versão publicada (GitHub Pages) para que o link seja o público. Sem nuvem, o link só funciona neste dispositivo.</div>
+      <div id="listaColabs"></div>
+      <button class="mini sec" onclick="convidarPendentes()">✉️ Convidar todos os pendentes</button>
+    </div>
+  </div>
+
+  <!-- TAB: RELATÓRIO INDIVIDUAL -->
+  <div class="tabpanel" id="tab-relatorio">
+    <div class="card no-print">
+      <label>Selecione o colaborador</label>
+      <select id="selRelatorio" onchange="renderRelatorio()"></select>
+    </div>
+    <div id="relatorioArea"></div>
+  </div>
+
+  <!-- TAB: MAPA DO TIME -->
+  <div class="tabpanel" id="tab-mapa">
+    <div id="mapaArea"></div>
+  </div>
+
+  <!-- TAB: DUPLAS -->
+  <div class="tabpanel" id="tab-duplas">
+    <div class="card no-print">
+      <h2>Compatibilidade entre pares</h2>
+      <div class="sub">Escolha duas pessoas para ver onde se conectam, onde podem colidir e a dica de convivência.</div>
+      <div class="row">
+        <div class="col"><label>Pessoa 1</label><select id="selDupla1"></select></div>
+        <div class="col"><label>Pessoa 2</label><select id="selDupla2"></select></div>
+      </div>
+      <button onclick="renderDupla()">Analisar dupla</button>
+    </div>
+    <div id="duplaArea"></div>
+  </div>
+
+  <!-- TAB: DINÂMICAS -->
+  <div class="tabpanel" id="tab-dinamica">
+    <div class="card no-print">
+      <h2>🎲 Dinâmica 1 — Cartões & Duplas de Conexão</h2>
+      <div class="sub">Roteiro: (1) mostre o mapa do time; (2) cada pessoa lê seu cartão de superpoderes em voz alta; (3) cada um compartilha sua "confissão de crescimento"; (4) sorteie duplas para o papo de conexão.</div>
+      <button onclick="sortearDupla()">🎯 Sortear dupla de conexão</button>
+      <button class="sec" onclick="window.print()">🖨️ Imprimir cartões</button>
+    </div>
+    <div id="sorteioArea"></div>
+    <div id="dinamicaArea"></div>
+    <div class="card no-print" style="margin-top:18px;">
+      <h2>🎭 Dinâmica 2 — Quem é Quem?</h2>
+      <div class="sub">O jogo da adivinhação: sorteio um cartão misterioso com os superpoderes e a confissão de alguém do time — sem o nome. O grupo debate e aposta em quem é. Ótimo para times e integração entre departamentos: mostra o quanto conhecemos (ou achamos que conhecemos) nossos colegas.</div>
+      <button onclick="sortearMisterio()">🃏 Sortear cartão misterioso</button>
+    </div>
+    <div id="misterioArea"></div>
+  </div>
+
+  <!-- TAB: BACKUP -->
+  <div class="tabpanel" id="tab-backup">
+    <div class="card">
+      <h2>💾 Backup e restauração</h2>
+      <div class="sub">Os dados ficam salvos neste navegador. Exporte um backup periodicamente — se o histórico do navegador for limpo, os dados vão junto (e aí nem eu salvo você).</div>
+      <button onclick="exportarBackup()">⬇️ Exportar backup (.json)</button>
+      <label style="margin-top:14px;">Restaurar backup</label>
+      <input type="file" id="importFile" accept=".json" onchange="importarBackup(event)">
+      <div class="box gray" style="margin-top:14px;">
+        <b>Zerar PIN:</b> para trocar o PIN, exporte o backup, clique abaixo e reimporte.
+        <br><button class="mini danger" style="margin-top:8px;" onclick="resetarPin()">Redefinir PIN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ===================== CONFIG ===================== */
+const LS_KEY = "conexaoTime_v3";
+const LS_KEY_OLD = "conexaoTime_v2";
+const QTD_PERGUNTAS = 10;
+
+/* ===================== BANCO DE PERGUNTAS (20) ===================== */
+const bancoPerguntas = [
+ {t:"Você ganhou uma viagem de presente e pode escolher tudo. Como você organiza?", opts:[
+   {p:"EX", txt:"Escolho o destino na hora e resolvo tudo rápido — o importante é ir"},
+   {p:"CM", txt:"O destino importa menos que a companhia — quero todo mundo junto"},
+   {p:"PL", txt:"Prefiro um lugar que já conheço e amo, com tudo combinado com antecedência"},
+   {p:"AN", txt:"Pesquiso avaliações, monto roteiro detalhado e comparo preços antes de fechar"}]},
+ {t:"Num jogo com amigos (baralho, tabuleiro, futebol...), você é aquele que:", opts:[
+   {p:"EX", txt:"Joga pra ganhar — brincadeira também é competição"},
+   {p:"CM", txt:"Está ali pela resenha; se ganhar, ótimo, se perder, a história fica boa"},
+   {p:"PL", txt:"Prefere jogos tranquilos e conhecidos; o bom é estar junto, sem estresse"},
+   {p:"AN", txt:"Sabe todas as regras de cor e corrige quem joga errado"}]},
+ {t:"Seu fim de semana ideal tem cara de:", opts:[
+   {p:"EX", txt:"Algo intenso: esporte, trilha, projeto novo — parado eu não fico"},
+   {p:"CM", txt:"Gente! Churrasco, festa, encontro — quanto mais, melhor"},
+   {p:"PL", txt:"Casa, família, série, comida boa e zero pressa"},
+   {p:"AN", txt:"Um hobby que exige concentração: leitura, games, montar/consertar algo"}]},
+ {t:"Seu celular quebrou. Como você escolhe o novo?", opts:[
+   {p:"EX", txt:"Compro logo o primeiro que resolve — sem celular eu não fico nem um dia"},
+   {p:"CM", txt:"Pergunto pros amigos o que estão usando e vou na indicação"},
+   {p:"PL", txt:"Compro a mesma marca/modelo de sempre — se funciona, por que mudar?"},
+   {p:"AN", txt:"Passo dias comparando ficha técnica, reviews e custo-benefício"}]},
+ {t:"O grupo de amigos não decide qual filme assistir. O que você faz?", opts:[
+   {p:"EX", txt:"Bato o martelo: 'vai ser esse' — alguém tem que decidir"},
+   {p:"CM", txt:"Transformo a indecisão em diversão — o papo já virou o programa"},
+   {p:"PL", txt:"Topo qualquer um, sério — pra mim tanto faz, quero paz"},
+   {p:"AN", txt:"Proponho um critério justo: nota no IMDb ou sorteio"}]},
+ {t:"Um amigo atrasa 40 minutos para o encontro. Sua reação real:", opts:[
+   {p:"EX", txt:"Falo na hora: 'você atrasou' — e sigo o programa"},
+   {p:"CM", txt:"Faço piada do atraso e em 2 minutos já esqueci"},
+   {p:"PL", txt:"Não brigo, mas fico chateado por dentro — combinado é combinado"},
+   {p:"AN", txt:"Me incomoda de verdade: pontualidade é uma forma de respeito"}]},
+ {t:"Na cozinha, você é o tipo que:", opts:[
+   {p:"EX", txt:"Inventa sem receita — se der errado, pede delivery"},
+   {p:"CM", txt:"Cozinha melhor com gente em volta, conversando e beliscando"},
+   {p:"PL", txt:"Faz os pratos de sempre, que nunca falham"},
+   {p:"AN", txt:"Segue a receita à risca, de balança e cronômetro"}]},
+ {t:"Plano combinado há semanas muda em cima da hora. Você:", opts:[
+   {p:"EX", txt:"Adoro improviso — plano novo, energia nova"},
+   {p:"CM", txt:"Tudo certo, desde que a turma continue junta"},
+   {p:"PL", txt:"Me chateia; eu tinha me organizado pra aquilo"},
+   {p:"AN", txt:"Aceito, mas quero entender o motivo da mudança"}]},
+ {t:"O melhor presente que podem te dar é:", opts:[
+   {p:"EX", txt:"Uma experiência radical ou um desafio novo"},
+   {p:"CM", txt:"Uma festa surpresa com as pessoas que amo"},
+   {p:"PL", txt:"Algo útil e aconchegante pra minha rotina ou minha casa"},
+   {p:"AN", txt:"Um gadget, livro ou curso do meu interesse específico"}]},
+ {t:"Sobre organização da sua casa (verdade, sem julgamento):", opts:[
+   {p:"EX", txt:"Organizo rápido do jeito que dá — funcional vence bonito"},
+   {p:"CM", txt:"Chamo alguém pra ajudar e a arrumação vira programa social"},
+   {p:"PL", txt:"Cada coisa tem seu lugar de sempre, e assim permanece"},
+   {p:"AN", txt:"Organizado por categoria — mexeu, eu percebo"}]},
+ {t:"Sua relação com música é:", opts:[
+   {p:"EX", txt:"Playlist de energia — treino, carro, volume alto"},
+   {p:"CM", txt:"O que estiver tocando na festa — música boa é música compartilhada"},
+   {p:"PL", txt:"As mesmas de sempre, que me acalmam e nunca enjoam"},
+   {p:"AN", txt:"Descubro artistas que ninguém conhece e estudo a discografia"}]},
+ {t:"Como você começa uma série nova?", opts:[
+   {p:"EX", txt:"Um episódio em velocidade 2x e já decido se fico ou não"},
+   {p:"CM", txt:"Só assisto se tiver alguém pra comentar junto — sozinho perde a graça"},
+   {p:"PL", txt:"Prefiro reassistir minhas favoritas — aposta garantida"},
+   {p:"AN", txt:"Leio críticas e avaliações antes de dar o primeiro play"}]},
+ {t:"Exercício físico pra você é:", opts:[
+   {p:"EX", txt:"Competição — quero superar minha marca (e a dos outros)"},
+   {p:"CM", txt:"Aula em grupo ou esporte coletivo — o social é que motiva"},
+   {p:"PL", txt:"Caminhada de sempre, mesmo horário, mesmo trajeto — e tá ótimo"},
+   {p:"AN", txt:"Treino planilhado: séries, cargas e progresso medidos"}]},
+ {t:"Você no supermercado:", opts:[
+   {p:"EX", txt:"Entro, pego, saio — 10 minutos e olhe lá"},
+   {p:"CM", txt:"Encontro um conhecido e a compra de 20 min vira uma hora de papo"},
+   {p:"PL", txt:"Mesma lista, mesmos corredores, mesmas marcas"},
+   {p:"AN", txt:"Comparo preço por grama e leio rótulo — compra é ciência"}]},
+ {t:"Se fosse escolher um jogo no celular, seria:", opts:[
+   {p:"EX", txt:"Ação, corrida, adrenalina — reflexo puro"},
+   {p:"CM", txt:"Qualquer um, desde que seja multiplayer com os amigos"},
+   {p:"PL", txt:"Aqueles relaxantes de construir e cuidar, no meu ritmo"},
+   {p:"AN", txt:"Puzzle, xadrez, estratégia — quero pensar"}]},
+ {t:"Fila gigante no banco ou no mercado. Você:", opts:[
+   {p:"EX", txt:"Desisto ou dou um jeito de resolver por outro canal — fila não"},
+   {p:"CM", txt:"Puxo papo com alguém e a fila até que passa rápido"},
+   {p:"PL", txt:"Espero tranquilo — faz parte, sem estresse"},
+   {p:"AN", txt:"Calculo mentalmente se o tempo de espera compensa"}]},
+ {t:"Seu aniversário ideal:", opts:[
+   {p:"EX", txt:"Fazer algo diferente e memorável — rotina nem no aniversário"},
+   {p:"CM", txt:"Festona com todo mundo que eu gosto — quanto mais gente, melhor"},
+   {p:"PL", txt:"Jantar íntimo com poucos e bons"},
+   {p:"AN", txt:"Prefiro passar batido — sem alarde, por favor"}]},
+ {t:"Dirigindo (ou num trajeto conhecido), você:", opts:[
+   {p:"EX", txt:"Pego atalhos por conta própria — confio no meu instinto"},
+   {p:"CM", txt:"Vou conversando e às vezes perco a saída — culpa do papo bom"},
+   {p:"PL", txt:"Mesma rota de sempre — conhecida, segura, sem surpresa"},
+   {p:"AN", txt:"Sigo o app à risca e ainda comparo rotas alternativas"}]},
+ {t:"Numa discussão acalorada no grupo da família/amigos, você:", opts:[
+   {p:"EX", txt:"Dou minha opinião forte e sigo em frente — sem ressentimento"},
+   {p:"CM", txt:"Faço uma piada pra desanuviar o clima"},
+   {p:"PL", txt:"Fico na minha — não vale a briga"},
+   {p:"AN", txt:"Trago fatos e fontes pra corrigir a informação errada"}]},
+ {t:"Sua relação com dinheiro:", opts:[
+   {p:"EX", txt:"Vejo oportunidade, aproveito — depois eu ajusto as contas"},
+   {p:"CM", txt:"Gasto com experiências e presentes — dinheiro bom é dinheiro vivido"},
+   {p:"PL", txt:"Poupo por segurança — imprevisto não me pega desprevenido"},
+   {p:"AN", txt:"Planilha, orçamento e investimento estudado"}]}
+];
+
+/* ===================== PERFIS (BICHOS DISC) ===================== */
+const perfis = {
+ EX:{nome:"Águia", emoji:"🦅", apelido:"A Águia — Executor(a)", cor:"#e05252", grad:"linear-gradient(135deg,#e05252,#b03030)",
+  essencia:"Movida a desafio e velocidade, a Águia voa alto e ataca direto ao objetivo. Onde outros veem problema, ela vê uma decisão a ser tomada. Energia alta, foco em resultado, zero paciência para enrolação.",
+  super:["Transforma decisão em ação mais rápido que qualquer um","Quanto maior a pressão, mais energia — não se intimida com desafios","Assume a frente quando ninguém quer assumir","Vai direto ao essencial: corta ruído e simplifica o complexo"],
+  tratamento:["Com objetividade: vá direto ao ponto, sem rodeios","Com autonomia: diga o objetivo, não o passo a passo","Com desafios: metas claras e ousadas a energizam","Com franqueza: prefere a verdade dura à meia palavra"],
+  entrega:["Com metas curtas, claras e mensuráveis","Com liberdade para escolher o caminho","Em ambientes com ritmo e senso de urgência","Quando enxerga o impacto direto do que faz"],
+  partilha:"“Às vezes atropelo o processo — e as pessoas — na pressa de chegar ao resultado. Estou aprendendo a ouvir antes de agir.”",
+  atencao:["Pode atropelar processos e detalhes em nome da velocidade","Tende a impor o próprio ritmo, gerando atrito com perfis mais cadenciados","Impaciência com análises longas pode gerar decisões precipitadas","Pode confundir discordância com obstáculo — e passar por cima"],
+  estresse:["Tom de voz mais duro e impaciência explícita","Decisões unilaterais, sem consultar ninguém","Atropela reuniões e corta as pessoas no meio da fala"],
+  apoioEstresse:"Devolva a sensação de controle: entregue algo para ela decidir, corte burocracia do caminho e seja direto sobre o que está acontecendo.",
+  oneOnOne:"Curto e com pauta objetiva: resultados, obstáculos, decisões. Pergunta de ouro: “o que está te travando que eu posso destravar?”",
+  funcoes:["Gestão de picos e crises operacionais","Expedição em janelas críticas","Liderança de turno","Projetos de melhoria com prazo apertado"],
+  motivar:"Metas desafiadoras, autonomia real e reconhecimento pelo resultado entregue.",
+  feedbackTxt:"Direto, objetivo, com fatos e plano de ação. Sem suspense nem sanduíche de elogio.",
+  evitar:"Microgerenciar, sufocar com burocracia ou dar feedback longo e emocional sem conclusão prática.",
+  acao:"Delegue uma decisão de maior porte esta semana, com prazo e critérios claros — canalize a energia decisória.",
+  pdi:"Escuta ativa: instituir um checkpoint de 5 minutos com o time antes de decisões que afetam outros.",
+  logistica:"Em operações logísticas, a Águia brilha em picos e crises, mas pode elevar o turnover ao redor se não dosar a pressão — atenção redobrada com equipes jovens."},
+ CM:{nome:"Pavão", emoji:"🦚", apelido:"O Pavão — Comunicador(a)", cor:"#e8a93c", grad:"linear-gradient(135deg,#e8a93c,#c9820f)",
+  essencia:"Movido a pessoas e entusiasmo, o Pavão colore qualquer ambiente com presença e humor. Ideias nascem conversando, e o clima do grupo é seu termômetro pessoal.",
+  super:["Conecta pessoas e transforma o clima de qualquer ambiente","Traduz assuntos complicados em conversas leves","Contagia o time com otimismo nos dias difíceis","Constrói pontes entre áreas e pessoas que mal se falavam"],
+  tratamento:["Com proximidade: a relação vem antes da tarefa","Com reconhecimento: elogio sincero vale ouro","Com espaço para falar: suas ideias nascem no diálogo","Com leveza: humor é combustível, não distração"],
+  entrega:["Trabalhando com gente, nunca isolado","Quando o propósito está claro e inspira","Com variedade — rotina engessada apaga o brilho","Quando se sente parte querida do time"],
+  partilha:"“Às vezes me disperso ou evito conversas difíceis para não estragar o clima. Estou aprendendo que conflito bem cuidado também é cuidado.”",
+  atencao:["Pode evitar decisões impopulares para preservar relacionamentos","Dispersão em tarefas longas, solitárias ou repetitivas","Sensibilidade alta a críticas — pode levar para o pessoal","Promete mais do que a agenda comporta, por empolgação"],
+  estresse:["Fala em excesso e dispersão acima do normal","Busca constante de aprovação e validação","Dramatiza pequenos problemas e evita ficar sozinho"],
+  apoioEstresse:"Escuta genuína primeiro, solução depois. Reconecte-o com o grupo e reforce verbalmente o valor dele — o silêncio do gestor é o que mais o corrói.",
+  oneOnOne:"Comece pela pessoa, não pela pauta. Deixe falar (é assim que ele pensa) e termine com combinados registrados por escrito.",
+  funcoes:["Integração e onboarding de novos colaboradores","Treinamentos e multiplicação de conhecimento","Interface com outras áreas e clientes","Campanhas de engajamento e segurança"],
+  motivar:"Reconhecimento público, projetos com interação e senso de propósito coletivo.",
+  feedbackTxt:"Comece reforçando o vínculo e o valor da pessoa; depois o ponto de melhoria, com exemplo concreto. Nunca só por escrito.",
+  evitar:"Expor em público, isolar em tarefas solitárias por longos períodos ou ignorar suas ideias sem escutá-las.",
+  acao:"Envolva-o esta semana numa missão que precise mobilizar outras pessoas — é onde ele rende em dobro.",
+  pdi:"Follow-through: fechar ciclos de execução com apoio de checklists ou parceria com um perfil mais processual.",
+  logistica:"Pavões reduzem o turnover ao redor — a Geração Z, maioria nas operações, responde fortemente a ambientes com clima e propósito."},
+ PL:{nome:"Pomba", emoji:"🕊️", apelido:"A Pomba — Planejador(a)", cor:"#35a374", grad:"linear-gradient(135deg,#35a374,#1e7a52)",
+  essencia:"Movida a constância e harmonia, a Pomba é o porto seguro do grupo: entrega sempre, sem alarde, e acalma o ambiente só de estar presente.",
+  super:["Constância rara: entrega sempre, sem falhar e sem alarde","Estabilidade emocional que acalma o time nas crises","Lealdade: quem tem uma Pomba ao lado tem um porto seguro","Ouve de verdade — as pessoas confiam nela naturalmente"],
+  tratamento:["Com previsibilidade: avise mudanças com antecedência","Com calma: pressão excessiva trava, não acelera","Com gentileza sincera: agressividade fecha portas","Valorizando a constância, não só os picos de resultado"],
+  entrega:["Com rotina clara e combinados respeitados","Em ambientes harmônicos, sem conflito constante","Com tempo para se adaptar às mudanças","Em tarefas de fôlego que exigem persistência"],
+  partilha:"“Tenho dificuldade de dizer não e às vezes guardo o que penso para evitar conflito. Estou aprendendo que minha opinião também importa.”",
+  atencao:["Resistência silenciosa a mudanças repentinas","Evita conflitos mesmo quando o confronto seria saudável","Baixa iniciativa espontânea — espera ser acionada","Acumula insatisfações em silêncio até saturar (e aí pede demissão 'do nada')"],
+  estresse:["Silêncio e isolamento acima do habitual","Resistência passiva: concorda na reunião, não executa","Lentidão e apatia em tarefas que antes fluíam"],
+  apoioEstresse:"Conversa calma, individual e sem plateia. Restaure a previsibilidade da rotina e pergunte a opinião dela — sob estresse, a Pomba se cala justamente quando mais precisa falar.",
+  oneOnOne:"Agenda fixa e recorrente (nada de surpresa). Perguntas abertas e silêncio confortável para ela responder. O que ela disser no 1-on-1 dificilmente dirá em grupo.",
+  funcoes:["Rotinas de inventário e conferência","Processos recorrentes que exigem disciplina","Funções de continuidade e retaguarda","Guardiã de rituais e padrões operacionais"],
+  motivar:"Clareza de expectativas, estabilidade e reconhecimento genuíno pela consistência.",
+  feedbackTxt:"Calmo, gradual, com tempo para processar. Pergunte a opinião dela — vai surpreender.",
+  evitar:"Mudar prioridades sem contexto, colocá-la no meio de conflitos sem preparo ou confundir silêncio com concordância.",
+  acao:"Antes da próxima mudança de rotina, explique o porquê com antecedência — a resistência cai pela metade.",
+  pdi:"Posicionamento: praticar dar opinião divergente em reuniões, começando por temas de baixo risco.",
+  logistica:"O setor caminha para vagas mais contínuas com alta exigência de confiabilidade — a Pomba é o perfil mais retido e valorizado nesse cenário."},
+ AN:{nome:"Coruja", emoji:"🦉", apelido:"A Coruja — Analista", cor:"#4478dd", grad:"linear-gradient(135deg,#4478dd,#2a54ab)",
+  essencia:"Movida a lógica e qualidade, a Coruja enxerga no escuro: o detalhe e o risco que ninguém viu. Prefere fazer certo a fazer rápido — e raramente erra.",
+  super:["Enxerga o detalhe e o risco que ninguém percebeu","O que passa pela sua mão sai bem-feito — qualidade é assinatura","Opiniões sempre embasadas: fato junto com argumento","Memória de processo: sabe o histórico e o porquê de cada regra"],
+  tratamento:["Com lógica: explique o porquê das coisas","Com tempo: análise de qualidade não sai no grito","Com critérios claros: regras difusas incomodam","Com feedback baseado em fatos, não em impressões"],
+  entrega:["Com informação completa e organizada","Em tarefas que exigem precisão e profundidade","Com espaço de concentração, sem interrupção constante","Quando a qualidade é valorizada tanto quanto o prazo"],
+  partilha:"“Às vezes me perco no detalhe ou espero a perfeição para entregar. Estou aprendendo que feito e bom vale mais que perfeito e atrasado.”",
+  atencao:["Paralisia por análise: pode travar esperando dados completos","Dificuldade em decidir com informação parcial","Pode soar fria ou excessivamente crítica sem perceber","Perfeccionismo pode atrasar entregas que já estavam boas"],
+  estresse:["Perfeccionismo paralisante — refaz o que já estava pronto","Crítica ácida a colegas e processos","Excesso de perguntas e desconfiança de tudo"],
+  apoioEstresse:"Dê critérios claros e prazos realistas. Valide explicitamente a competência dela — sob estresse, a Coruja duvida primeiro de si mesma, depois de todo o resto.",
+  oneOnOne:"Envie a pauta antes (ela vai chegar preparada). Discuta com dados e respeite o tempo de resposta — a pausa dela não é vazio, é processamento.",
+  funcoes:["Controle de qualidade e conformidade","Planejamento e torre de controle","Análise de indicadores e relatórios","Auditoria de processos e melhoria contínua"],
+  motivar:"Tempo para analisar, critérios claros e reconhecimento pela qualidade técnica.",
+  feedbackTxt:"Traga dados e exemplos concretos. Feedback vago ou 'de percepção' será contestado — com razão.",
+  evitar:"Exigir decisões instantâneas sem dados, criticar sem evidência ou interromper seu foco constantemente.",
+  acao:"Defina prazo-limite claro para uma análise em curso — evita o loop infinito de refinamento.",
+  pdi:"Decidir com 80%: praticar decisões pequenas com informação parcial e prazo curto.",
+  logistica:"Com a automação avançando nas operações, a Coruja se valoriza em controle, planejamento e qualidade — funções em alta no setor."}
+};
+
+/* ===================== BLENDS (principal + secundário) ===================== */
+const blends = {
+ "EX-CM":"Águia com traço de Pavão: decide rápido E vende bem a decisão — liderança natural que arrasta o time junto.",
+ "EX-PL":"Águia com traço de Pomba: raro equilíbrio entre pressa e paciência; decide rápido, mas sustenta o combinado até o fim.",
+ "EX-AN":"Águia com traço de Coruja: decisão rápida com base analítica — combinação poderosa em negociação e gestão de crise.",
+ "CM-EX":"Pavão com traço de Águia: influência com senso de urgência; mobiliza as pessoas e ainda cobra o resultado.",
+ "CM-PL":"Pavão com traço de Pomba: o coração do time; conecta, acolhe e sustenta o clima — as pessoas gravitam ao redor.",
+ "CM-AN":"Pavão com traço de Coruja: comunica com embasamento; perfil ideal para treinar, ensinar e apresentar dados.",
+ "PL-EX":"Pomba com traço de Águia: constância que acelera quando precisa; confiável no dia a dia e surpreendentemente decidida sob demanda.",
+ "PL-CM":"Pomba com traço de Pavão: estabilidade calorosa; é quem todos procuram para desabafar, alinhar e se acalmar.",
+ "PL-AN":"Pomba com traço de Coruja: processo e constância — a espinha dorsal operacional de qualquer time.",
+ "AN-EX":"Coruja com traço de Águia: análise que termina em decisão; perfil de planejamento executivo, raro e valioso.",
+ "AN-CM":"Coruja com traço de Pavão: dados apresentados com carisma; traduz o técnico para o humano como poucos.",
+ "AN-PL":"Coruja com traço de Pomba: precisão paciente; qualidade impecável em tarefas de fôlego, sem drama."
+};
+
+/* ===================== DUPLAS ===================== */
+const duplasInfo = {
+ "EX-EX":{conexao:"Duas Águias: velocidade máxima, zero enrolação. Juntas destravam qualquer projeto parado.",atrito:"Disputa de território aéreo — as duas querem decidir e nenhuma quer ceder.",dica:"Dividam territórios claros de decisão. Combinem: quem decide o quê, sem invadir."},
+ "CM-EX":{conexao:"Águia + Pavão: um decide e faz, o outro engaja todo mundo no caminho. Dupla de lançamento perfeita.",atrito:"A Águia acha o Pavão disperso; o Pavão acha a Águia bruta.",dica:"Águia: escute a história até o fim. Pavão: comece pela conclusão."},
+ "EX-PL":{conexao:"Águia + Pomba: velocidade com sustentação — um abre a trilha, o outro pavimenta e mantém. Complemento raro.",atrito:"O ritmo: a Águia muda tudo em cima da hora e a Pomba precisa de previsibilidade.",dica:"Águia: avise mudanças com antecedência. Pomba: sinalize seu limite em voz alta."},
+ "AN-EX":{conexao:"Águia + Coruja: coragem com precisão — um decide rápido, o outro garante que a decisão não explode depois.",atrito:"A Águia acha que a Coruja trava tudo; a Coruja acha a Águia imprudente.",dica:"Combinem o '80/20': a Coruja tem prazo para analisar, e a Águia espera esse prazo."},
+ "CM-CM":{conexao:"Dois Pavões: festa garantida — clima, ideias, energia e risada. O ambiente melhora na hora.",atrito:"Muita conversa, pouco fechamento — ideias brilhantes que ninguém executa.",dica:"Terminem cada papo com: quem faz o quê, até quando. Por escrito."},
+ "CM-PL":{conexao:"Pavão + Pomba: calor humano em dose dupla — um anima, o outro acolhe. O time se sente em casa.",atrito:"Ambos evitam conflito — problemas podem ficar meses embaixo do tapete.",dica:"Criem o ritual da 'conversa corajosa': um tema desconfortável por semana, dito com carinho."},
+ "AN-CM":{conexao:"Pavão + Coruja: dados com carisma — um constrói o argumento perfeito, o outro faz o mundo querer ouvir.",atrito:"A Coruja desconfia de empolgação sem fato; o Pavão acha a Coruja fria.",dica:"Pavão: leve um dado junto com a ideia. Coruja: reconheça a ideia antes de apontar o furo."},
+ "PL-PL":{conexao:"Duas Pombas: estabilidade absoluta — combinados cumpridos, clima sereno, confiança total.",atrito:"Zona de conforto em dose dupla — mudanças necessárias podem ser adiadas para sempre.",dica:"Agendem revisões periódicas do 'sempre foi assim'. Um provoca, o outro pondera."},
+ "AN-PL":{conexao:"Pomba + Coruja: qualidade com constância — processos redondos, entregas impecáveis, zero retrabalho.",atrito:"Ambos podem travar diante do novo: um por cautela, outro por apego à rotina.",dica:"Definam juntos um experimento pequeno por mês — mudar em porção homeopática."},
+ "AN-AN":{conexao:"Duas Corujas: precisão ao quadrado — nada escapa. Análises profundas e decisões blindadas.",atrito:"Paralisia por análise em dupla — e debates infinitos sobre qual método é mais correto.",dica:"Todo estudo nasce com prazo e critério de 'suficiente'. Decidido é melhor que perfeito."}
+};
+
+const insightLog = "<b>Panorama de mercado (Logística, 2025-2026):</b> turnover voluntário responde por 60-70% dos desligamentos do setor; entre trabalhadores até 29 anos, ~40% trocaram de emprego em um ano (LCA Consultores). Alinhar perfil comportamental à função e à liderança é um dos fatores de retenção mais eficazes.";
+
+/* ===================== STORAGE + MIGRAÇÃO ===================== */
+function db(){
+  try{
+    let d = JSON.parse(localStorage.getItem(LS_KEY));
+    if(!d){
+      const antigo = JSON.parse(localStorage.getItem(LS_KEY_OLD));
+      if(antigo){ d = antigo; d.notas = d.notas||{}; localStorage.setItem(LS_KEY, JSON.stringify(d)); }
+    }
+    d = d || {pin:null,colabs:[],respostas:{},notas:{}};
+    d.notas = d.notas||{};
+    return d;
+  }
+  catch(e){ return {pin:null,colabs:[],respostas:{},notas:{}}; }
+}
+function salvar(d){ localStorage.setItem(LS_KEY, JSON.stringify(d)); }
+function hashPin(p){ let h=0; for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;} return "h"+h; }
+
+/* ===================== NUVEM (SUPABASE) =====================
+   Preencha as duas constantes abaixo com os dados do seu projeto
+   Supabase (Settings > API). Deixe em branco para modo local. */
+const SUPABASE_URL = "";  // ex: "https://abcdefgh.supabase.co"
+const SUPABASE_KEY = "";  // chave "anon public"
+
+const nuvemOn = () => SUPABASE_URL.length > 0 && SUPABASE_KEY.length > 0;
+function sbHeaders(extra){
+  return Object.assign({apikey:SUPABASE_KEY, Authorization:"Bearer "+SUPABASE_KEY, "Content-Type":"application/json"}, extra||{});
+}
+async function sbFetch(path, opts){
+  const r = await fetch(SUPABASE_URL+"/rest/v1/"+path, opts);
+  if(!r.ok) throw new Error("Supabase "+r.status);
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
+async function nuvemCarregar(){
+  if(!nuvemOn()) return false;
+  try{
+    const [colabs, resps] = await Promise.all([
+      sbFetch("colaboradores?select=*&order=criado.asc", {headers:sbHeaders()}),
+      sbFetch("respostas?select=*", {headers:sbHeaders()})
+    ]);
+    const loc = db();
+    if(colabs.length===0 && loc.colabs.length>0){
+      for(const c of loc.colabs){ await nuvemUpsertColab(c, loc.notas[c.id]); }
+      for(const cid of Object.keys(loc.respostas)){ await nuvemUpsertResposta(cid, loc.respostas[cid]); }
+      toast("☁️ Dados locais migrados para a nuvem!");
+      return true;
+    }
+    const d = db();
+    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
+    d.notas = {};
+    colabs.forEach(c=>{ if(c.nota) d.notas[c.id]=c.nota; });
+    d.respostas = {};
+    resps.forEach(r=>{ d.respostas[r.colab_id] = {data:r.data, contagem:r.contagem}; });
+    salvar(d);
+    return true;
+  }catch(e){ console.warn(e); toast("⚠️ Sem conexão com a nuvem — usando dados locais."); return false; }
+}
+async function nuvemUpsertColab(c, nota){
+  if(!nuvemOn()) return;
+  try{
+    await sbFetch("colaboradores", {method:"POST", headers:sbHeaders({Prefer:"resolution=merge-duplicates"}),
+      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
+  }catch(e){ toast("⚠️ Falha ao salvar na nuvem — dado mantido localmente."); }
+}
+async function nuvemDeleteColab(id){
+  if(!nuvemOn()) return;
+  try{
+    await sbFetch("respostas?colab_id=eq."+id, {method:"DELETE", headers:sbHeaders()});
+    await sbFetch("colaboradores?id=eq."+id, {method:"DELETE", headers:sbHeaders()});
+  }catch(e){ toast("⚠️ Falha ao excluir na nuvem."); }
+}
+async function nuvemUpsertResposta(colabId, r){
+  if(!nuvemOn()) return;
+  try{
+    await sbFetch("respostas", {method:"POST", headers:sbHeaders({Prefer:"resolution=merge-duplicates"}),
+      body:JSON.stringify([{colab_id:colabId, data:r.data, contagem:r.contagem}])});
+  }catch(e){ toast("⚠️ Resposta salva só localmente — verifique a conexão."); }
+}
+async function nuvemDeleteResposta(colabId){
+  if(!nuvemOn()) return;
+  try{ await sbFetch("respostas?colab_id=eq."+colabId, {method:"DELETE", headers:sbHeaders()}); }catch(e){}
+}
+function atualizarBadgeNuvem(){
+  const b = document.getElementById("cloudBadge");
+  if(!b) return;
+  if(nuvemOn()){ b.textContent="☁️ nuvem conectada"; b.style.background="var(--pl)"; }
+}
+
+/* ===================== NAVEGAÇÃO ===================== */
+let quizAlvo = null;
+let quizPerguntasAtuais = [];
+let gestorLiberado = false;
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.innerText=msg; t.style.display="block";
+  setTimeout(()=>t.style.display="none",2600);
+}
+function embaralhar(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* ===================== FLUXO COLABORADOR ===================== */
+async function irParaResponder(){
+  if(nuvemOn()){ toast("☁️ Carregando o time..."); await nuvemCarregar(); }
+  const d = db();
+  if(d.colabs.length===0){ alert("Nenhum colaborador cadastrado ainda. Peça ao gestor para cadastrar o time na Área do Gestor."); return; }
+  const l = document.getElementById("listaQuem");
+  l.innerHTML = d.colabs.map(c=>{
+    const done = d.respostas[c.id] ? " <span style='font-size:11px;color:var(--pl);'>(já respondeu — refaz e substitui)</span>" : "";
+    return `<button class="big-btn sec" onclick="iniciarQuiz('${c.id}')">${c.nome}<small>${c.cargo||""}${done}</small></button>`;
+  }).join("");
+  show("scr-quem");
+}
+
+function iniciarQuiz(id){
+  const d = db();
+  const c = d.colabs.find(x=>x.id===id);
+  if(!c){ alert("Colaborador não encontrado."); return; }
+  quizAlvo = c;
+  quizPerguntasAtuais = embaralhar(bancoPerguntas).slice(0, QTD_PERGUNTAS)
+    .map(q=>({t:q.t, opts:embaralhar(q.opts)}));
+  document.getElementById("quizTitulo").innerText = `Olá, ${c.nome.split(" ")[0]}! 👋`;
+  const qDiv = document.getElementById("quizPerguntas");
+  qDiv.innerHTML = "";
+  quizPerguntasAtuais.forEach((q,i)=>{
+    const box = document.createElement("div");
+    box.className = "q-card";
+    box.innerHTML = `<p>${i+1}. ${q.t}</p>` + q.opts.map(o=>
+      `<span class="opt" data-q="${i}" data-p="${o.p}" onclick="marcar(this)">${o.txt}</span>`).join("");
+    qDiv.appendChild(box);
+  });
+  atualizarProgresso();
+  show("scr-quiz");
+}
+
+function marcar(el){
+  const q = el.dataset.q;
+  document.querySelectorAll(`.opt[data-q="${q}"]`).forEach(o=>o.classList.remove("sel"));
+  el.classList.add("sel");
+  atualizarProgresso();
+}
+function atualizarProgresso(){
+  const total = QTD_PERGUNTAS;
+  const feitas = new Set([...document.querySelectorAll(".opt.sel")].map(o=>o.dataset.q)).size;
+  document.getElementById("progFill").style.width = Math.round(feitas/total*100)+"%";
+}
+
+async function enviarQuiz(){
+  const sels = [...document.querySelectorAll(".opt.sel")];
+  if(sels.length < QTD_PERGUNTAS){ alert("Faltam "+(QTD_PERGUNTAS-sels.length)+" pergunta(s). Responde tudo, vai — são só 10. 😄"); return; }
+  const contagem = {EX:0,CM:0,PL:0,AN:0};
+  sels.forEach(o=>contagem[o.dataset.p]++);
+  const d = db();
+  d.respostas[quizAlvo.id] = {data:new Date().toISOString(), contagem};
+  salvar(d);
+  await nuvemUpsertResposta(quizAlvo.id, d.respostas[quizAlvo.id]);
+  renderDevolutiva(quizAlvo, contagem);
+  show("scr-devolutiva");
+}
+
+function perfilPrincipal(contagem){
+  const ord = Object.entries(contagem).sort((a,b)=>b[1]-a[1]);
+  return {principal:ord[0][0], secundario:ord[1][0], ord};
+}
+
+function barras(contagem){
+  const total = QTD_PERGUNTAS;
+  const ord = Object.entries(contagem).sort((a,b)=>b[1]-a[1]);
+  return ord.map(([k,v])=>{
+    const pct = Math.round(v/total*100);
+    return `<div class="bar-row"><div class="bar-label">${perfis[k].emoji} ${perfis[k].nome}</div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${perfis[k].cor}"></div></div><div><b>${pct}%</b></div></div>`;
+  }).join("");
+}
+
+/* ===================== RADAR SVG ===================== */
+function radarSVG(contagem, cor){
+  const cx=140, cy=130, r=95;
+  // eixos: Águia (topo), Pavão (direita), Pomba (baixo), Coruja (esquerda)
+  const eixos = [
+    {k:"EX", dx:0, dy:-1, lx:cx, ly:cy-r-16, anchor:"middle"},
+    {k:"CM", dx:1, dy:0, lx:cx+r+10, ly:cy+4, anchor:"start"},
+    {k:"PL", dx:0, dy:1, lx:cx, ly:cy+r+22, anchor:"middle"},
+    {k:"AN", dx:-1, dy:0, lx:cx-r-10, ly:cy+4, anchor:"end"}
+  ];
+  let grid = "";
+  [0.25,0.5,0.75,1].forEach(f=>{
+    const pts = eixos.map(e=>`${cx+e.dx*r*f},${cy+e.dy*r*f}`).join(" ");
+    grid += `<polygon points="${pts}" fill="none" stroke="#d5dae3" stroke-width="1"/>`;
+  });
+  let axes = eixos.map(e=>`<line x1="${cx}" y1="${cy}" x2="${cx+e.dx*r}" y2="${cy+e.dy*r}" stroke="#d5dae3" stroke-width="1"/>`).join("");
+  const dataPts = eixos.map(e=>{
+    const f = (contagem[e.k]||0)/QTD_PERGUNTAS;
+    return `${cx+e.dx*r*f},${cy+e.dy*r*f}`;
+  }).join(" ");
+  const labels = eixos.map(e=>{
+    const pct = Math.round((contagem[e.k]||0)/QTD_PERGUNTAS*100);
+    return `<text x="${e.lx}" y="${e.ly}" text-anchor="${e.anchor}" font-size="12" font-weight="700" fill="${perfis[e.k].cor}">${perfis[e.k].emoji} ${perfis[e.k].nome} ${pct}%</text>`;
+  }).join("");
+  return `<svg viewBox="0 0 280 270" style="max-width:320px;display:block;margin:0 auto;">
+    ${grid}${axes}
+    <polygon points="${dataPts}" fill="${cor}44" stroke="${cor}" stroke-width="2.5"/>
+    ${eixos.map(e=>{
+      const f=(contagem[e.k]||0)/QTD_PERGUNTAS;
+      return `<circle cx="${cx+e.dx*r*f}" cy="${cy+e.dy*r*f}" r="4" fill="${cor}"/>`;
+    }).join("")}
+    ${labels}
+  </svg>`;
+}
+
+function intensidade(contagem){
+  const max = Math.max(...Object.values(contagem));
+  const pct = max/QTD_PERGUNTAS*100;
+  if(pct>=60) return {nivel:"Perfil muito acentuado", txt:"As características do perfil dominante aparecem com força — os pontos fortes E os pontos de atenção tendem a ser bem visíveis no dia a dia."};
+  if(pct>=40) return {nivel:"Perfil bem definido", txt:"Há um estilo predominante claro, temperado pelo perfil secundário — comportamento consistente, com alguma flexibilidade."};
+  return {nivel:"Perfil híbrido/equilibrado", txt:"Nenhum estilo domina com folga — pessoa versátil, que adapta o comportamento ao contexto. O lado B: pode ser mais difícil de 'ler' e prever."};
+}
+
+/* ===================== DEVOLUTIVA ===================== */
+function renderDevolutiva(c, contagem){
+  const {principal, secundario} = perfilPrincipal(contagem);
+  const P = perfis[principal], S = perfis[secundario];
+  const blend = blends[principal+"-"+secundario] || "";
+  document.getElementById("devConteudo").innerHTML = `
+   <div class="hero" style="background:${P.grad}">
+     <div style="font-size:13px;opacity:.85;">Devolutiva de ${c.nome}</div>
+     <h2>${P.emoji} ${P.apelido}</h2>
+     <div class="apelido">com um toque de ${S.nome} ${S.emoji}</div>
+     <div class="chips"><span class="chip">Perfil predominante</span><span class="chip">${new Date().toLocaleDateString("pt-BR")}</span></div>
+   </div>
+   <div class="card">
+     <p style="font-size:14px;line-height:1.6;">${P.essencia}</p>
+     ${blend?`<div class="box blue"><b>Sua combinação:</b> ${blend}</div>`:""}
+     <div class="row">
+       <div class="col">${radarSVG(contagem, P.cor)}</div>
+       <div class="col" style="align-self:center;">${barras(contagem)}</div>
+     </div>
+   </div>
+   <div class="card">
+     <h3>🌟 Seus Superpoderes</h3>
+     <ul class="tight">${P.super.map(s=>`<li>${s}</li>`).join("")}</ul>
+     <h3>💛 Como você gosta de ser tratado(a)</h3>
+     <ul class="tight">${P.tratamento.map(s=>`<li>${s}</li>`).join("")}</ul>
+     <h3>🚀 Como você entrega seus melhores resultados</h3>
+     <ul class="tight">${P.entrega.map(s=>`<li>${s}</li>`).join("")}</ul>
+     <div class="box gold"><b>🌱 Sua confissão de crescimento</b> (para compartilhar na dinâmica, se quiser):<br><i>${P.partilha}</i></div>
+     <div class="box green">Nenhum bicho é melhor que outro — times fortes têm Águias, Pavões, Pombas e Corujas. O seu mapa mostra onde você brilha naturalmente e onde há espaço para crescer. Obrigado por se conhecer melhor com a gente! 💚</div>
+   </div>`;
+}
+
+/* ===================== PIN / GESTOR ===================== */
+function pedirPin(){
+  const d = db();
+  const criar = !d.pin;
+  document.getElementById("pinSub").innerText = criar
+    ? "Primeiro acesso: crie um PIN para proteger a área do gestor."
+    : "Digite seu PIN para acessar.";
+  document.getElementById("pinConfirmWrap").style.display = criar ? "block" : "none";
+  document.getElementById("pinInput").value = "";
+  document.getElementById("pinConfirm").value = "";
+  show("scr-pin");
+}
+function validarPin(){
+  const d = db();
+  const v = document.getElementById("pinInput").value.trim();
+  if(v.length < 4){ alert("PIN precisa de ao menos 4 dígitos."); return; }
+  if(!d.pin){
+    const conf = document.getElementById("pinConfirm").value.trim();
+    if(v!==conf){ alert("Os PINs não conferem."); return; }
+    d.pin = hashPin(v); salvar(d);
+    toast("PIN criado! Guarde bem.");
+  } else if(hashPin(v)!==d.pin){ alert("PIN incorreto."); return; }
+  gestorLiberado = true;
+  abrirGestor();
+}
+function bloquear(){ gestorLiberado=false; show("scr-home"); toast("Área do gestor bloqueada."); }
+function resetarPin(){
+  if(!confirm("Redefinir o PIN? Os dados dos colaboradores são mantidos.")) return;
+  const d = db(); d.pin=null; salvar(d);
+  gestorLiberado=false; pedirPin();
+}
+
+async function abrirGestor(){
+  if(!gestorLiberado){ pedirPin(); return; }
+  if(nuvemOn()){ toast("☁️ Sincronizando com a nuvem..."); await nuvemCarregar(); }
+  renderColabs(); renderSelects(); renderMapa(); renderDinamica();
+  show("scr-gestor");
+}
+function abaGestor(el){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  document.querySelectorAll(".tabpanel").forEach(p=>p.classList.remove("active"));
+  document.getElementById(el.dataset.tab).classList.add("active");
+  if(el.dataset.tab==="tab-mapa") renderMapa();
+  if(el.dataset.tab==="tab-dinamica") renderDinamica();
+  if(el.dataset.tab==="tab-relatorio") renderRelatorio();
+}
+
+/* ===================== CADASTRO + CONVITE ===================== */
+async function cadastrar(){
+  const nome = document.getElementById("novoNome").value.trim();
+  const cargo = document.getElementById("novoCargo").value.trim();
+  const email = document.getElementById("novoEmail").value.trim();
+  if(!nome){ alert("Informe o nome."); return; }
+  if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ alert("E-mail inválido."); return; }
+  const d = db();
+  const novo = {id:"c"+Date.now(), nome, cargo, email, criado:new Date().toISOString()};
+  d.colabs.push(novo);
+  salvar(d);
+  await nuvemUpsertColab(novo);
+  document.getElementById("novoNome").value="";
+  document.getElementById("novoCargo").value="";
+  document.getElementById("novoEmail").value="";
+  renderColabs(); renderSelects();
+  toast(nome+" cadastrado(a)!");
+}
+async function descadastrar(id){
+  const d = db();
+  const c = d.colabs.find(x=>x.id===id);
+  if(!confirm(`Descadastrar ${c.nome}? O perfil e as respostas serão removidos.`)) return;
+  d.colabs = d.colabs.filter(x=>x.id!==id);
+  delete d.respostas[id];
+  delete d.notas[id];
+  salvar(d);
+  await nuvemDeleteColab(id);
+  renderColabs(); renderSelects(); renderMapa(); renderDinamica();
+  toast("Colaborador removido.");
+}
+async function refazerResposta(id){
+  if(!confirm("Apagar a resposta atual? A pessoa poderá responder novamente.")) return;
+  const d = db(); delete d.respostas[id]; salvar(d);
+  await nuvemDeleteResposta(id);
+  renderColabs(); renderSelects();
+}
+function linkDe(id){
+  const base = location.href.split("?")[0].split("#")[0];
+  return base + "?c=" + id;
+}
+function copiarLink(id){
+  const url = linkDe(id);
+  if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=>toast("Link copiado!")); }
+  else { prompt("Copie o link:", url); }
+}
+function corpoConvite(c){
+  return `Olá, ${c.nome.split(" ")[0]}!\n\nVocê foi convidado(a) para a Essência — nossa dinâmica de perfis comportamentais. Conhecer para evoluir!\n\nSão 10 perguntas rápidas e leves sobre você (nada de pegadinha, sem resposta certa ou errada). Ao final, você recebe na hora sua devolutiva com seus superpoderes e seu jeito de funcionar melhor.\n\nAcesse pelo link abaixo ou, se preferir, abra a ferramenta Essência e selecione seu nome:\n${linkDe(c.id)}\n\nLeva 5 minutos. Responda com sinceridade — o resultado é seu!\n\nAbraço,\nRick`;
+}
+async function convidar(id){
+  const d = db();
+  const c = d.colabs.find(x=>x.id===id);
+  if(!c.email){ alert("Este colaborador não tem e-mail cadastrado."); return; }
+  if(nuvemOn() && location.protocol==="file:"){
+    alert("Atenção: você está abrindo a Essência pelo arquivo local. Abra a versão publicada (link do GitHub Pages) antes de convidar — assim o link enviado será o link público que funciona para todos.");
+  }
+  const url = `mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent("Convite: Essência — conhecer para evoluir 🧭")}&body=${encodeURIComponent(corpoConvite(c))}`;
+  window.location.href = url;
+  const d2 = db();
+  const c2 = d2.colabs.find(x=>x.id===id);
+  c2.convidadoEm = new Date().toISOString();
+  salvar(d2);
+  await nuvemUpsertColab(c2, d2.notas[id]);
+  setTimeout(renderColabs, 400);
+}
+function convidarPendentes(){
+  const d = db();
+  const pendentes = d.colabs.filter(c=>!d.respostas[c.id] && c.email);
+  if(pendentes.length===0){ alert("Nenhum pendente com e-mail cadastrado."); return; }
+  const emails = pendentes.map(c=>c.email).join(";");
+  const corpo = `Olá, time!\n\nVocês foram convidados para a Essência — nossa dinâmica de perfis comportamentais. Conhecer para evoluir!\n\nSão 10 perguntas rápidas e leves (sem resposta certa ou errada). Ao final, cada um recebe na hora sua devolutiva com seus superpoderes.\n\nAbram a ferramenta Essência e selecionem seu nome para responder. Leva 5 minutos!\n\nAbraço,\nRick`;
+  window.location.href = `mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent("Convite: Essência — conhecer para evoluir 🧭")}&body=${encodeURIComponent(corpo)}`;
+}
+function renderColabs(){
+  const d = db();
+  const el = document.getElementById("listaColabs");
+  if(d.colabs.length===0){ el.innerHTML = "<div class='sub'>Nenhum colaborador cadastrado ainda.</div>"; return; }
+  el.innerHTML = "<table><tr><th>Nome</th><th>Cargo</th><th>E-mail</th><th>Status</th><th>Perfil</th><th>Ações</th></tr>" +
+   d.colabs.map(c=>{
+     const r = d.respostas[c.id];
+     let perfil = "—", status = "<span class='status-pend'>Pendente</span>";
+     if(c.convidadoEm && !r) status = `<span class='status-pend'>Convidado</span><br><span style='font-size:11px;color:var(--muted)'>${new Date(c.convidadoEm).toLocaleDateString("pt-BR")}</span>`;
+     if(r){
+       const {principal} = perfilPrincipal(r.contagem);
+       perfil = `<span class="tag" style="background:${perfis[principal].cor}">${perfis[principal].emoji} ${perfis[principal].nome}</span>`;
+       status = `<span class='status-ok'>Respondido</span><br><span style='font-size:11px;color:var(--muted)'>${new Date(r.data).toLocaleDateString("pt-BR")}</span>`;
+     }
+     return `<tr><td><b>${c.nome}</b></td><td>${c.cargo||"—"}</td><td style="font-size:12px;">${c.email||"—"}</td><td>${status}</td><td>${perfil}</td>
+       <td>
+         ${c.email && !r?`<button class="mini" onclick="convidar('${c.id}')">✉️ Convidar</button>`:""}
+         <button class="mini sec" onclick="iniciarQuiz('${c.id}')">▶ Responder agora</button>
+         <button class="mini sec" onclick="copiarLink('${c.id}')">🔗 Link</button>
+         ${r?`<button class="mini sec" onclick="refazerResposta('${c.id}')">↺ Refazer</button>`:""}
+         <button class="mini danger" onclick="descadastrar('${c.id}')">✕</button>
+       </td></tr>`;
+   }).join("") + "</table>";
+}
+
+/* ===================== RELATÓRIO INDIVIDUAL ===================== */
+function renderSelects(){
+  const d = db();
+  const respondidos = d.colabs.filter(c=>d.respostas[c.id]);
+  const opts = respondidos.map(c=>`<option value="${c.id}">${c.nome}</option>`).join("");
+  document.getElementById("selRelatorio").innerHTML = opts || "<option value=''>— ninguém respondeu ainda —</option>";
+  document.getElementById("selDupla1").innerHTML = opts;
+  document.getElementById("selDupla2").innerHTML = opts;
+}
+async function salvarNota(id){
+  const d = db();
+  d.notas[id] = document.getElementById("notaGestor").value;
+  salvar(d);
+  const c = d.colabs.find(x=>x.id===id);
+  if(c) await nuvemUpsertColab(c, d.notas[id]);
+  toast("Anotação salva!");
+}
+function renderRelatorio(){
+  const d = db();
+  const id = document.getElementById("selRelatorio").value;
+  const area = document.getElementById("relatorioArea");
+  if(!id || !d.respostas[id]){ area.innerHTML = "<div class='card sub'>Selecione um colaborador que já respondeu.</div>"; return; }
+  const c = d.colabs.find(x=>x.id===id);
+  const r = d.respostas[id];
+  const {principal, secundario} = perfilPrincipal(r.contagem);
+  const P = perfis[principal], S = perfis[secundario];
+  const inten = intensidade(r.contagem);
+  const blend = blends[principal+"-"+secundario] || "";
+  area.innerHTML = `
+   <div class="hero" style="background:${P.grad}">
+     <div style="font-size:13px;opacity:.85;">Relatório confidencial do gestor</div>
+     <h2>${P.emoji} ${c.nome}</h2>
+     <div class="apelido">${c.cargo||""} • ${P.apelido} com traço de ${S.nome} ${S.emoji} • respondido em ${new Date(r.data).toLocaleDateString("pt-BR")}</div>
+   </div>
+   <div class="card">
+     <h3>📡 Radar comportamental</h3>
+     <div class="row">
+       <div class="col">${radarSVG(r.contagem, P.cor)}</div>
+       <div class="col" style="align-self:center;">
+         ${barras(r.contagem)}
+         <div class="gauge"><b>Intensidade:</b> ${inten.nivel}<br><span style="color:var(--muted)">${inten.txt}</span></div>
+       </div>
+     </div>
+     <p style="font-size:13.5px;line-height:1.6;">${P.essencia}</p>
+     ${blend?`<div class="box blue"><b>Combinação de perfil:</b> ${blend}</div>`:""}
+   </div>
+   <div class="row">
+     <div class="col card">
+       <h3>💪 Pontos fortes</h3>
+       <ul class="tight">${P.super.map(s=>`<li>${s}</li>`).join("")}</ul>
+     </div>
+     <div class="col card">
+       <h3>⚠️ Pontos de atenção (confidencial)</h3>
+       <ul class="tight">${P.atencao.map(s=>`<li>${s}</li>`).join("")}</ul>
+     </div>
+   </div>
+   <div class="row">
+     <div class="col card">
+       <h3>🚨 Sinais de estresse (fique de olho)</h3>
+       <ul class="tight">${P.estresse.map(s=>`<li>${s}</li>`).join("")}</ul>
+       <div class="box gold"><b>Como apoiar:</b> ${P.apoioEstresse}</div>
+     </div>
+     <div class="col card">
+       <h3>🎯 Funções onde este perfil brilha (operação logística)</h3>
+       <ul class="tight">${P.funcoes.map(s=>`<li>${s}</li>`).join("")}</ul>
+     </div>
+   </div>
+   <div class="card">
+     <h3>🧭 Guia rápido de gestão</h3>
+     <div class="box green"><b>Como motivar:</b> ${P.motivar}</div>
+     <div class="box blue"><b>Como dar feedback:</b> ${P.feedbackTxt}</div>
+     <div class="box blue"><b>Como conduzir o 1-on-1:</b> ${P.oneOnOne}</div>
+     <div class="box red"><b>Evite:</b> ${P.evitar}</div>
+     <h3>🎯 PDI Pocket</h3>
+     <div class="box gray"><b>Ação da semana:</b> ${P.acao}<br><b>Habilidade (3 meses):</b> ${P.pdi}</div>
+     <div class="insight">${insightLog}<br><br><b>Leitura para este perfil:</b> ${P.logistica}</div>
+   </div>
+   <div class="card no-print">
+     <h3>📝 Anotações do gestor (privadas, salvas na ferramenta)</h3>
+     <textarea id="notaGestor" placeholder="Percepções, combinados do 1-on-1, evolução...">${d.notas[id]||""}</textarea>
+     <button class="mini" onclick="salvarNota('${id}')">💾 Salvar anotação</button>
+     <button class="mini sec" onclick="window.print()">🖨️ Imprimir / PDF</button>
+   </div>`;
+}
+
+/* ===================== MAPA DO TIME ===================== */
+function renderMapa(){
+  const d = db();
+  const area = document.getElementById("mapaArea");
+  const respondidos = d.colabs.filter(c=>d.respostas[c.id]);
+  if(respondidos.length===0){ area.innerHTML="<div class='card sub'>Ninguém respondeu ainda. O mapa aparece aqui conforme o time responde.</div>"; return; }
+  const cont = {EX:0,CM:0,PL:0,AN:0};
+  respondidos.forEach(c=>{ cont[perfilPrincipal(d.respostas[c.id].contagem).principal]++; });
+  const total = respondidos.length;
+  let acc = 0; const fatias = [];
+  ["EX","CM","PL","AN"].forEach(k=>{
+    const pct = cont[k]/total*100;
+    if(pct>0){ fatias.push(`${perfis[k].cor} ${acc}% ${acc+pct}%`); acc+=pct; }
+  });
+  const legenda = ["EX","CM","PL","AN"].map(k=>{
+    const nomes = respondidos.filter(c=>perfilPrincipal(d.respostas[c.id].contagem).principal===k).map(c=>c.nome.split(" ")[0]).join(", ");
+    return `<div><span class="dot" style="background:${perfis[k].cor}"></span><b>${perfis[k].emoji} ${perfis[k].nome}</b> — ${cont[k]} pessoa(s)${nomes?": "+nomes:""}</div>`;
+  }).join("");
+  const faltantes = ["EX","CM","PL","AN"].filter(k=>cont[k]===0).map(k=>perfis[k].emoji+" "+perfis[k].nome);
+  const leitura = faltantes.length
+    ? `<div class="box gold"><b>Ponto cego do time:</b> não há nenhum perfil <b>${faltantes.join(", ")}</b>. As forças naturais desse(s) estilo(s) precisam ser cobertas conscientemente por alguém — ou contratadas.</div>`
+    : `<div class="box green"><b>Time completo:</b> os quatro bichos estão representados — diversidade comportamental é vantagem competitiva. Use as duplas complementares a favor.</div>`;
+  area.innerHTML = `
+   <div class="card">
+     <h2>🗺️ Mapa do Time (${total} respondente${total>1?"s":""})</h2>
+     <div class="row">
+       <div class="col"><div class="donut" style="background:conic-gradient(${fatias.join(",")})"></div></div>
+       <div class="col legend" style="align-self:center;">${legenda}</div>
+     </div>
+     ${leitura}
+     <div class="insight">${insightLog}</div>
+     <button class="no-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
+   </div>`;
+}
+
+/* ===================== DUPLAS ===================== */
+function chaveDupla(p1,p2){ return [p1,p2].sort().join("-"); }
+function renderDupla(){
+  const d = db();
+  const id1 = document.getElementById("selDupla1").value;
+  const id2 = document.getElementById("selDupla2").value;
+  const area = document.getElementById("duplaArea");
+  if(!id1 || !id2){ area.innerHTML="<div class='card sub'>Selecione duas pessoas que já responderam.</div>"; return; }
+  if(id1===id2){ area.innerHTML="<div class='card sub'>Escolha duas pessoas diferentes — autoconexão é com o psicólogo. 😄</div>"; return; }
+  area.innerHTML = cardDupla(id1,id2,d);
+}
+function cardDupla(id1,id2,d){
+  const c1 = d.colabs.find(x=>x.id===id1), c2 = d.colabs.find(x=>x.id===id2);
+  const p1 = perfilPrincipal(d.respostas[id1].contagem).principal;
+  const p2 = perfilPrincipal(d.respostas[id2].contagem).principal;
+  const info = duplasInfo[chaveDupla(p1,p2)];
+  return `<div class="pair-card">
+    <div class="vs">
+      <span class="tag" style="background:${perfis[p1].cor};font-size:13px;padding:6px 14px;">${perfis[p1].emoji} ${c1.nome.split(" ")[0]} — ${perfis[p1].nome}</span>
+      <b>🤝</b>
+      <span class="tag" style="background:${perfis[p2].cor};font-size:13px;padding:6px 14px;">${perfis[p2].emoji} ${c2.nome.split(" ")[0]} — ${perfis[p2].nome}</span>
+    </div>
+    <div class="box green"><b>Onde se conectam:</b> ${info.conexao}</div>
+    <div class="box red"><b>Onde podem colidir:</b> ${info.atrito}</div>
+    <div class="box blue"><b>Dica de convivência:</b> ${info.dica}</div>
+  </div>`;
+}
+function sortearDupla(){
+  const d = db();
+  const resp = d.colabs.filter(c=>d.respostas[c.id]);
+  if(resp.length<2){ alert("Precisa de ao menos 2 pessoas com resposta."); return; }
+  const i = Math.floor(Math.random()*resp.length);
+  let j = Math.floor(Math.random()*resp.length);
+  while(j===i){ j = Math.floor(Math.random()*resp.length); }
+  document.getElementById("sorteioArea").innerHTML =
+    `<h2 style="margin:10px 0;">🎯 Dupla sorteada:</h2>` + cardDupla(resp[i].id, resp[j].id, d) +
+    `<div class="sub">Sugestão: 5 minutos de papo — cada um conta ao outro um superpoder que admira nele.</div>`;
+}
+
+/* ===================== DINÂMICA: CARTÕES ===================== */
+function renderDinamica(){
+  const d = db();
+  const area = document.getElementById("dinamicaArea");
+  const resp = d.colabs.filter(c=>d.respostas[c.id]);
+  if(resp.length===0){ area.innerHTML="<div class='card sub'>Sem respostas ainda — os cartões da dinâmica aparecem aqui.</div>"; return; }
+  area.innerHTML = `<div class="grid-cards">` + resp.map(c=>{
+    const p = perfilPrincipal(d.respostas[c.id].contagem).principal;
+    const P = perfis[p];
+    return `<div class="p-card" style="background:${P.grad}">
+      <h4>${P.emoji} ${c.nome}</h4>
+      <div class="role">${c.cargo||""} • ${P.nome}</div>
+      <b style="font-size:12px;">🌟 Superpoderes:</b>
+      <ul>${P.super.slice(0,2).map(s=>`<li>${s}</li>`).join("")}</ul>
+      <div style="margin-top:8px;font-size:12px;background:rgba(255,255,255,.18);border-radius:8px;padding:8px;"><b>🌱 Confissão de crescimento:</b><br><i>${P.partilha}</i></div>
+    </div>`;
+  }).join("") + `</div>`;
+}
+
+/* ===================== DINÂMICA: QUEM É QUEM ===================== */
+let misterioAtual = null;
+function sortearMisterio(){
+  const d = db();
+  const resp = d.colabs.filter(c=>d.respostas[c.id]);
+  if(resp.length<2){ alert("Precisa de ao menos 2 pessoas com resposta para o jogo fazer sentido."); return; }
+  misterioAtual = resp[Math.floor(Math.random()*resp.length)];
+  const p = perfilPrincipal(d.respostas[misterioAtual.id].contagem).principal;
+  const P = perfis[p];
+  document.getElementById("misterioArea").innerHTML = `
+    <div class="mystery">
+      <h3>🃏 Cartão Misterioso — quem é essa pessoa?</h3>
+      <p style="font-size:13.5px;"><b>Bicho:</b> ${P.emoji} ${P.nome}</p>
+      <b style="font-size:13px;">🌟 Superpoderes:</b>
+      <ul class="tight" style="color:#fff;">${P.super.slice(0,2).map(s=>`<li>${s}</li>`).join("")}</ul>
+      <b style="font-size:13px;">🌱 Confissão de crescimento:</b>
+      <p style="font-size:13px;"><i>${P.partilha}</i></p>
+      <div style="font-size:12.5px;opacity:.8;margin:10px 0;">O grupo debate e aposta. Quando todos apostarem...</div>
+      <button onclick="revelarMisterio()">🎉 Revelar!</button>
+    </div>`;
+}
+function revelarMisterio(){
+  if(!misterioAtual) return;
+  const d = db();
+  const p = perfilPrincipal(d.respostas[misterioAtual.id].contagem).principal;
+  const P = perfis[p];
+  document.getElementById("misterioArea").innerHTML = `
+    <div class="mystery" style="background:${P.grad}">
+      <h3>🎉 Era... ${misterioAtual.nome}!</h3>
+      <p style="font-size:13.5px;">${P.emoji} ${P.apelido}${misterioAtual.cargo?" • "+misterioAtual.cargo:""}</p>
+      <p style="font-size:13px;">Pergunta para o grupo: <i>o que te surpreendeu (ou não) nesse perfil?</i> 2 minutos de papo antes do próximo cartão.</p>
+      <button onclick="sortearMisterio()">🃏 Próximo cartão</button>
+    </div>`;
+  misterioAtual = null;
+}
+
+/* ===================== BACKUP ===================== */
+function exportarBackup(){
+  const blob = new Blob([JSON.stringify(db(),null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "essencia_backup_"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  toast("Backup exportado!");
+}
+function importarBackup(ev){
+  const f = ev.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const dados = JSON.parse(e.target.result);
+      if(!dados.colabs){ alert("Arquivo inválido."); return; }
+      if(!confirm("Substituir todos os dados atuais pelo backup?")) return;
+      dados.notas = dados.notas||{};
+      salvar(dados);
+      renderColabs(); renderSelects(); renderMapa(); renderDinamica();
+      toast("Backup restaurado!");
+    }catch(err){ alert("Não foi possível ler o arquivo."); }
+  };
+  reader.readAsText(f);
+}
+
+/* ===================== INICIALIZAÇÃO + LINK DIRETO (?c=id) ===================== */
+(async function(){
+  atualizarBadgeNuvem();
+  const params = new URLSearchParams(location.search);
+  const cid = params.get("c");
+  if(cid){
+    if(nuvemOn()) await nuvemCarregar();
+    const d = db();
+    const c = d.colabs.find(x=>x.id===cid);
+    if(c){ iniciarQuiz(cid); }
+    else { alert("Convite não encontrado. Peça um novo link ao gestor."); }
+  }
+})();
+</script>
+</body>
+</html>
+
