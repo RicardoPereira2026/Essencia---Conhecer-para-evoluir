@@ -83,6 +83,9 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
 .gauge{font-size:13px;margin:8px 0;}
 .mystery{background:linear-gradient(135deg,#3a3f52,#20242f);color:#fff;border-radius:14px;padding:24px;margin:12px 0;}
 .mystery h3{margin-top:0;}
+.codebox{background:#eef8f2;border:1px dashed #6cbf95;border-radius:8px;padding:10px 14px;font-size:15px;font-weight:700;letter-spacing:1px;color:#1e7a52;display:inline-block;margin:6px 0;}
+.deptpill{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:20px;padding:4px 10px;font-size:12.5px;margin:3px;}
+.deptpill b{cursor:pointer;color:var(--ex);}
 @media print{
   body{background:#fff;padding:0;}
   .no-print{display:none !important;}
@@ -98,12 +101,23 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
   <h1>🧭 Essência <span id="cloudBadge" class="tag" style="background:#8a93a5;vertical-align:middle;">💾 modo local</span></h1>
   <div class="sub"><b>Conhecer para evoluir.</b> Mapa de perfis comportamentais para conexão de equipe — descubra seus superpoderes e como você funciona melhor.</div>
   <div class="card">
-    <button class="big-btn" onclick="irParaResponder()">📝 Responder meu questionário
+    <button class="big-btn" onclick="irCodigoEquipe()">📝 Responder meu questionário
       <small>10 perguntas rápidas sobre você (sem resposta certa ou errada). Ao final, você recebe sua devolutiva na hora.</small>
     </button>
-    <button class="big-btn sec" onclick="pedirPin()">🔐 Área do Gestor
-      <small>Cadastro, convites por e-mail, relatórios completos com radar, mapa do time e dinâmicas de grupo.</small>
+    <button class="big-btn sec" onclick="irGestorGate()">🔐 Área do Gestor
+      <small>Cada gestor tem seu próprio ambiente: cadastro, convites, relatórios, mapa do time e dinâmicas — só do seu departamento.</small>
     </button>
+  </div>
+</div>
+
+<!-- ==================== CÓDIGO DA EQUIPE (colaborador) ==================== -->
+<div class="screen" id="scr-codigo">
+  <div class="card" style="max-width:460px;margin:30px auto;">
+    <h2>Qual é a sua equipe?</h2>
+    <div class="sub">Digite o <b>código da equipe</b> que seu gestor enviou no convite.</div>
+    <input type="text" id="codEquipeInput" placeholder="Ex: DENGO-A1B2" style="text-transform:uppercase;">
+    <button onclick="entrarComoColaborador()">Continuar</button>
+    <button class="sec" onclick="show('scr-home')">← Voltar</button>
   </div>
 </div>
 
@@ -111,7 +125,7 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
 <div class="screen" id="scr-quem">
   <div class="card">
     <h2>Quem é você?</h2>
-    <div class="sub">Selecione seu nome para começar.</div>
+    <div class="sub" id="quemSub">Selecione seu nome para começar.</div>
     <div id="listaQuem"></div>
     <button class="sec" onclick="show('scr-home')">← Voltar</button>
   </div>
@@ -138,27 +152,39 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
   </div>
 </div>
 
-<!-- ==================== PIN ==================== -->
-<div class="screen" id="scr-pin">
-  <div class="card" style="max-width:420px;margin:40px auto;">
-    <h2 id="pinTitulo">🔐 Área do Gestor</h2>
-    <div class="sub" id="pinSub"></div>
-    <input type="password" id="pinInput" placeholder="PIN (4+ dígitos)" maxlength="12">
-    <div id="pinConfirmWrap" style="display:none;">
-      <input type="password" id="pinConfirm" placeholder="Confirme o PIN" maxlength="12">
+<!-- ==================== GESTOR GATE (entrar / criar ambiente) ==================== -->
+<div class="screen" id="scr-gestor-gate">
+  <div class="row" style="max-width:760px;margin:24px auto;">
+    <div class="col card">
+      <h2>🔑 Entrar no meu ambiente</h2>
+      <div class="sub">Já tem um ambiente criado? Acesse com seu código e PIN.</div>
+      <label>Código da equipe</label>
+      <input type="text" id="gateCodigo" placeholder="Ex: DENGO-A1B2" style="text-transform:uppercase;">
+      <label>PIN</label>
+      <input type="password" id="gatePin" placeholder="Seu PIN" maxlength="12">
+      <button onclick="entrarAmbiente()">Entrar</button>
     </div>
-    <button onclick="validarPin()">Entrar</button>
-    <button class="sec" onclick="show('scr-home')">Voltar</button>
+    <div class="col card">
+      <h2>✨ Criar novo ambiente</h2>
+      <div class="sub">Primeiro acesso? Crie o ambiente do seu departamento — separado dos demais gestores.</div>
+      <label>Seu nome / nome da equipe</label>
+      <input type="text" id="gateNome" placeholder="Ex: Rick — Operações">
+      <label>Crie um PIN (4+ dígitos)</label>
+      <input type="password" id="gateNovoPin" placeholder="PIN" maxlength="12">
+      <input type="password" id="gateNovoPin2" placeholder="Confirme o PIN" maxlength="12">
+      <button onclick="criarAmbiente()">Criar ambiente</button>
+    </div>
   </div>
+  <div style="text-align:center;"><button class="sec no-print" onclick="show('scr-home')">← Voltar ao início</button></div>
 </div>
 
 <!-- ==================== ÁREA DO GESTOR ==================== -->
 <div class="screen" id="scr-gestor">
   <div class="topbar no-print">
-    <h1>🛠️ Área do Gestor</h1>
+    <h1>🛠️ Área do Gestor <span id="wsNomeBadge" class="tag" style="background:var(--accent);vertical-align:middle;"></span></h1>
     <div>
       <button class="mini sec" onclick="show('scr-home')">🏠 Início</button>
-      <button class="mini sec" onclick="bloquear()">🔒 Bloquear</button>
+      <button class="mini sec" onclick="bloquear()">🔒 Sair</button>
     </div>
   </div>
   <div class="tabs no-print">
@@ -167,6 +193,7 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
     <div class="tab" data-tab="tab-mapa" onclick="abaGestor(this)">🗺️ Mapa do Time</div>
     <div class="tab" data-tab="tab-duplas" onclick="abaGestor(this)">🤝 Duplas & Convivência</div>
     <div class="tab" data-tab="tab-dinamica" onclick="abaGestor(this)">🎲 Dinâmicas</div>
+    <div class="tab" data-tab="tab-config" onclick="abaGestor(this)">⚙️ Config</div>
     <div class="tab" data-tab="tab-backup" onclick="abaGestor(this)">💾 Backup</div>
   </div>
 
@@ -176,14 +203,19 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
       <h2>Cadastrar colaborador</h2>
       <div class="row">
         <div class="col"><label>Nome</label><input type="text" id="novoNome" placeholder="Ex: Ana Souza"></div>
-        <div class="col"><label>Cargo</label><input type="text" id="novoCargo" placeholder="Ex: Analista de Operações"></div>
+        <div class="col"><label>Cargo</label><input type="text" id="novoCargo" placeholder="Ex: Operador de Estoque"></div>
+      </div>
+      <div class="row">
+        <div class="col"><label>Departamento</label><select id="novoDepto"></select></div>
         <div class="col"><label>E-mail corporativo</label><input type="email" id="novoEmail" placeholder="ana.souza@empresa.com"></div>
       </div>
       <button onclick="cadastrar()">➕ Cadastrar</button>
     </div>
     <div class="card">
       <h2>Time cadastrado</h2>
-      <div class="sub">✉️ <b>Convidar</b> abre seu e-mail com a mensagem e o link prontos — é só enviar. <i>Importante:</i> com a nuvem configurada, envie os convites a partir da versão publicada (GitHub Pages) para que o link seja o público. Sem nuvem, o link só funciona neste dispositivo.</div>
+      <div class="sub">✉️ <b>Convidar</b> abre seu e-mail com a mensagem, o link e o código da equipe prontos. Envie sempre a partir da versão publicada (GitHub Pages) para o link ser o público.</div>
+      <label>Filtrar por departamento</label>
+      <select id="filtroDeptoColab" onchange="renderColabs()" style="max-width:320px;"></select>
       <div id="listaColabs"></div>
       <button class="mini sec" onclick="convidarPendentes()">✉️ Convidar todos os pendentes</button>
     </div>
@@ -200,6 +232,10 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
 
   <!-- TAB: MAPA DO TIME -->
   <div class="tabpanel" id="tab-mapa">
+    <div class="card no-print">
+      <label>Filtrar por departamento</label>
+      <select id="filtroDeptoMapa" onchange="renderMapa()" style="max-width:320px;"></select>
+    </div>
     <div id="mapaArea"></div>
   </div>
 
@@ -229,24 +265,38 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
     <div id="dinamicaArea"></div>
     <div class="card no-print" style="margin-top:18px;">
       <h2>🎭 Dinâmica 2 — Quem é Quem?</h2>
-      <div class="sub">O jogo da adivinhação: sorteio um cartão misterioso com os superpoderes e a confissão de alguém do time — sem o nome. O grupo debate e aposta em quem é. Ótimo para times e integração entre departamentos: mostra o quanto conhecemos (ou achamos que conhecemos) nossos colegas.</div>
+      <div class="sub">O jogo da adivinhação: sorteio um cartão misterioso com os superpoderes e a confissão de alguém do time — sem o nome. O grupo debate e aposta em quem é. Ótimo para integração entre departamentos.</div>
       <button onclick="sortearMisterio()">🃏 Sortear cartão misterioso</button>
     </div>
     <div id="misterioArea"></div>
+  </div>
+
+  <!-- TAB: CONFIG -->
+  <div class="tabpanel" id="tab-config">
+    <div class="card">
+      <h2>⚙️ Departamentos do seu ambiente</h2>
+      <div class="sub">Gerencie a lista de departamentos usada no cadastro e nos filtros. Vale só para o seu ambiente.</div>
+      <div id="listaDeptos" style="margin-bottom:10px;"></div>
+      <div class="row">
+        <div class="col"><input type="text" id="novoDeptoNome" placeholder="Novo departamento (ex: Recebimento)"></div>
+      </div>
+      <button onclick="addDepto()">➕ Adicionar departamento</button>
+    </div>
+    <div class="card">
+      <h2>🔑 Dados do ambiente</h2>
+      <div class="sub">Compartilhe o código com sua equipe (para responderem) — nunca compartilhe o PIN.</div>
+      <p>Código da equipe: <span class="codebox" id="wsCodigoShow"></span> <button class="mini sec" onclick="copiarCodigo()">📋 Copiar</button></p>
+    </div>
   </div>
 
   <!-- TAB: BACKUP -->
   <div class="tabpanel" id="tab-backup">
     <div class="card">
       <h2>💾 Backup e restauração</h2>
-      <div class="sub">Os dados ficam salvos neste navegador. Exporte um backup periodicamente — se o histórico do navegador for limpo, os dados vão junto (e aí nem eu salvo você).</div>
+      <div class="sub">Exporta os dados do <b>seu ambiente</b> (colaboradores, respostas, notas). Com a nuvem ligada, os dados já ficam salvos no banco — o backup é sua camada extra de segurança.</div>
       <button onclick="exportarBackup()">⬇️ Exportar backup (.json)</button>
-      <label style="margin-top:14px;">Restaurar backup</label>
+      <label style="margin-top:14px;">Restaurar backup neste ambiente</label>
       <input type="file" id="importFile" accept=".json" onchange="importarBackup(event)">
-      <div class="box gray" style="margin-top:14px;">
-        <b>Zerar PIN:</b> para trocar o PIN, exporte o backup, clique abaixo e reimporte.
-        <br><button class="mini danger" style="margin-top:8px;" onclick="resetarPin()">Redefinir PIN</button>
-      </div>
     </div>
   </div>
 </div>
@@ -256,9 +306,24 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
 
 <script>
 /* ===================== CONFIG ===================== */
-const LS_KEY = "conexaoTime_v3";
-const LS_KEY_OLD = "conexaoTime_v2";
+const LS_KEY = "essencia_v4";
 const QTD_PERGUNTAS = 10;
+const DEPTS_PADRAO = ["Estoque / Armazém","Transporte","Expedição","Recebimento","Planejamento (PCP)","Administrativo","Liderança"];
+
+/* ===================== NUVEM (SUPABASE) ===================== */
+const SUPABASE_URL = "https://xleruhnrkwxtvszmemxx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_MaPkHCKisbpkjNtsf6vODg_0uiNIpgU";
+
+const nuvemOn = () => SUPABASE_URL.length > 0 && SUPABASE_KEY.length > 0;
+function sbHeaders(extra){
+  return Object.assign({apikey:SUPABASE_KEY, Authorization:"Bearer "+SUPABASE_KEY, "Content-Type":"application/json"}, extra||{});
+}
+async function sbFetch(path, opts){
+  const r = await fetch(SUPABASE_URL+"/rest/v1/"+path, opts);
+  if(!r.ok) throw new Error("Supabase "+r.status);
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
 
 /* ===================== BANCO DE PERGUNTAS (20) ===================== */
 const bancoPerguntas = [
@@ -366,7 +431,8 @@ const bancoPerguntas = [
 
 /* ===================== PERFIS (BICHOS DISC) ===================== */
 const perfis = {
- EX:{nome:"Águia", emoji:"🦅", apelido:"A Águia — Executor(a)", cor:"#e05252", grad:"linear-gradient(135deg,#e05252,#b03030)",
+ EX:{nome:"Águia", emoji:"🦅", apelido:"A Águia — Executor(a)", disc:"D — Decisor", cor:"#e05252", grad:"linear-gradient(135deg,#e05252,#b03030)",
+  frase:"Velocidade e resultado: decide, age e destrava.",
   essencia:"Movida a desafio e velocidade, a Águia voa alto e ataca direto ao objetivo. Onde outros veem problema, ela vê uma decisão a ser tomada. Energia alta, foco em resultado, zero paciência para enrolação.",
   super:["Transforma decisão em ação mais rápido que qualquer um","Quanto maior a pressão, mais energia — não se intimida com desafios","Assume a frente quando ninguém quer assumir","Vai direto ao essencial: corta ruído e simplifica o complexo"],
   tratamento:["Com objetividade: vá direto ao ponto, sem rodeios","Com autonomia: diga o objetivo, não o passo a passo","Com desafios: metas claras e ousadas a energizam","Com franqueza: prefere a verdade dura à meia palavra"],
@@ -375,6 +441,8 @@ const perfis = {
   atencao:["Pode atropelar processos e detalhes em nome da velocidade","Tende a impor o próprio ritmo, gerando atrito com perfis mais cadenciados","Impaciência com análises longas pode gerar decisões precipitadas","Pode confundir discordância com obstáculo — e passar por cima"],
   estresse:["Tom de voz mais duro e impaciência explícita","Decisões unilaterais, sem consultar ninguém","Atropela reuniões e corta as pessoas no meio da fala"],
   apoioEstresse:"Devolva a sensação de controle: entregue algo para ela decidir, corte burocracia do caminho e seja direto sobre o que está acontecendo.",
+  engajado:["Assume metas desafiadoras por conta própria","Fala abertamente e propõe soluções sem ser pedido"],
+  desmotiva:"Rotina engessada, excesso de reuniões sem decisão e falta de autonomia — nada apaga uma Águia mais rápido.",
   oneOnOne:"Curto e com pauta objetiva: resultados, obstáculos, decisões. Pergunta de ouro: “o que está te travando que eu posso destravar?”",
   funcoes:["Gestão de picos e crises operacionais","Expedição em janelas críticas","Liderança de turno","Projetos de melhoria com prazo apertado"],
   motivar:"Metas desafiadoras, autonomia real e reconhecimento pelo resultado entregue.",
@@ -382,8 +450,10 @@ const perfis = {
   evitar:"Microgerenciar, sufocar com burocracia ou dar feedback longo e emocional sem conclusão prática.",
   acao:"Delegue uma decisão de maior porte esta semana, com prazo e critérios claros — canalize a energia decisória.",
   pdi:"Escuta ativa: instituir um checkpoint de 5 minutos com o time antes de decisões que afetam outros.",
-  logistica:"Em operações logísticas, a Águia brilha em picos e crises, mas pode elevar o turnover ao redor se não dosar a pressão — atenção redobrada com equipes jovens."},
- CM:{nome:"Pavão", emoji:"🦚", apelido:"O Pavão — Comunicador(a)", cor:"#e8a93c", grad:"linear-gradient(135deg,#e8a93c,#c9820f)",
+  logistica:"Em operações logísticas, a Águia brilha em picos e crises, mas pode elevar o turnover ao redor se não dosar a pressão — atenção redobrada com equipes jovens.",
+  lideranca:"Perfil D (Decisor): lidera inovação e destrava crises. Estudos de 2025 reforçam equilibrar rapidez com análise e escuta ativa — é o que impede que a velocidade vire rotatividade da equipe."},
+ CM:{nome:"Pavão", emoji:"🦚", apelido:"O Pavão — Comunicador(a)", disc:"I — Influente", cor:"#e8a93c", grad:"linear-gradient(135deg,#e8a93c,#c9820f)",
+  frase:"Pessoas e entusiasmo: conecta, engaja e anima.",
   essencia:"Movido a pessoas e entusiasmo, o Pavão colore qualquer ambiente com presença e humor. Ideias nascem conversando, e o clima do grupo é seu termômetro pessoal.",
   super:["Conecta pessoas e transforma o clima de qualquer ambiente","Traduz assuntos complicados em conversas leves","Contagia o time com otimismo nos dias difíceis","Constrói pontes entre áreas e pessoas que mal se falavam"],
   tratamento:["Com proximidade: a relação vem antes da tarefa","Com reconhecimento: elogio sincero vale ouro","Com espaço para falar: suas ideias nascem no diálogo","Com leveza: humor é combustível, não distração"],
@@ -392,6 +462,8 @@ const perfis = {
   atencao:["Pode evitar decisões impopulares para preservar relacionamentos","Dispersão em tarefas longas, solitárias ou repetitivas","Sensibilidade alta a críticas — pode levar para o pessoal","Promete mais do que a agenda comporta, por empolgação"],
   estresse:["Fala em excesso e dispersão acima do normal","Busca constante de aprovação e validação","Dramatiza pequenos problemas e evita ficar sozinho"],
   apoioEstresse:"Escuta genuína primeiro, solução depois. Reconecte-o com o grupo e reforce verbalmente o valor dele — o silêncio do gestor é o que mais o corrói.",
+  engajado:["Puxa o clima do time para cima espontaneamente","Traz ideias novas e voluntaria-se para o que envolve pessoas"],
+  desmotiva:"Isolamento, indiferença do gestor e falta de reconhecimento — o Pavão murcha em silêncio quando não é visto.",
   oneOnOne:"Comece pela pessoa, não pela pauta. Deixe falar (é assim que ele pensa) e termine com combinados registrados por escrito.",
   funcoes:["Integração e onboarding de novos colaboradores","Treinamentos e multiplicação de conhecimento","Interface com outras áreas e clientes","Campanhas de engajamento e segurança"],
   motivar:"Reconhecimento público, projetos com interação e senso de propósito coletivo.",
@@ -399,8 +471,10 @@ const perfis = {
   evitar:"Expor em público, isolar em tarefas solitárias por longos períodos ou ignorar suas ideias sem escutá-las.",
   acao:"Envolva-o esta semana numa missão que precise mobilizar outras pessoas — é onde ele rende em dobro.",
   pdi:"Follow-through: fechar ciclos de execução com apoio de checklists ou parceria com um perfil mais processual.",
-  logistica:"Pavões reduzem o turnover ao redor — a Geração Z, maioria nas operações, responde fortemente a ambientes com clima e propósito."},
- PL:{nome:"Pomba", emoji:"🕊️", apelido:"A Pomba — Planejador(a)", cor:"#35a374", grad:"linear-gradient(135deg,#35a374,#1e7a52)",
+  logistica:"Pavões reduzem o turnover ao redor — a Geração Z, maioria nas operações, responde fortemente a ambientes com clima e propósito.",
+  lideranca:"Perfil I (Influente): motor de motivação, colaboração e envolvimento emocional. Empatia e escuta ativa estão entre os fatores de retenção mais estratégicos de 2025 — e é aqui que o Pavão é ouro."},
+ PL:{nome:"Pomba", emoji:"🕊️", apelido:"A Pomba — Planejador(a)", disc:"S — Sereno", cor:"#35a374", grad:"linear-gradient(135deg,#35a374,#1e7a52)",
+  frase:"Constância e harmonia: o porto seguro do time.",
   essencia:"Movida a constância e harmonia, a Pomba é o porto seguro do grupo: entrega sempre, sem alarde, e acalma o ambiente só de estar presente.",
   super:["Constância rara: entrega sempre, sem falhar e sem alarde","Estabilidade emocional que acalma o time nas crises","Lealdade: quem tem uma Pomba ao lado tem um porto seguro","Ouve de verdade — as pessoas confiam nela naturalmente"],
   tratamento:["Com previsibilidade: avise mudanças com antecedência","Com calma: pressão excessiva trava, não acelera","Com gentileza sincera: agressividade fecha portas","Valorizando a constância, não só os picos de resultado"],
@@ -409,6 +483,8 @@ const perfis = {
   atencao:["Resistência silenciosa a mudanças repentinas","Evita conflitos mesmo quando o confronto seria saudável","Baixa iniciativa espontânea — espera ser acionada","Acumula insatisfações em silêncio até saturar (e aí pede demissão 'do nada')"],
   estresse:["Silêncio e isolamento acima do habitual","Resistência passiva: concorda na reunião, não executa","Lentidão e apatia em tarefas que antes fluíam"],
   apoioEstresse:"Conversa calma, individual e sem plateia. Restaure a previsibilidade da rotina e pergunte a opinião dela — sob estresse, a Pomba se cala justamente quando mais precisa falar.",
+  engajado:["Mantém a rotina impecável e ajuda os colegas sem alarde","Traz, com jeito, opinião sincera quando se sente segura"],
+  desmotiva:"Mudança sem aviso, conflito constante e cobrança agressiva — a Pomba desliga em silêncio muito antes de reclamar.",
   oneOnOne:"Agenda fixa e recorrente (nada de surpresa). Perguntas abertas e silêncio confortável para ela responder. O que ela disser no 1-on-1 dificilmente dirá em grupo.",
   funcoes:["Rotinas de inventário e conferência","Processos recorrentes que exigem disciplina","Funções de continuidade e retaguarda","Guardiã de rituais e padrões operacionais"],
   motivar:"Clareza de expectativas, estabilidade e reconhecimento genuíno pela consistência.",
@@ -416,8 +492,10 @@ const perfis = {
   evitar:"Mudar prioridades sem contexto, colocá-la no meio de conflitos sem preparo ou confundir silêncio com concordância.",
   acao:"Antes da próxima mudança de rotina, explique o porquê com antecedência — a resistência cai pela metade.",
   pdi:"Posicionamento: praticar dar opinião divergente em reuniões, começando por temas de baixo risco.",
-  logistica:"O setor caminha para vagas mais contínuas com alta exigência de confiabilidade — a Pomba é o perfil mais retido e valorizado nesse cenário."},
- AN:{nome:"Coruja", emoji:"🦉", apelido:"A Coruja — Analista", cor:"#4478dd", grad:"linear-gradient(135deg,#4478dd,#2a54ab)",
+  logistica:"O setor caminha para vagas mais contínuas com alta exigência de confiabilidade — a Pomba é o perfil mais retido e valorizado nesse cenário.",
+  lideranca:"Perfil S (Sereno): constrói segurança psicológica e consistência — pilar dos ambientes saudáveis que, segundo os estudos de 2025, mais retêm talento operacional."},
+ AN:{nome:"Coruja", emoji:"🦉", apelido:"A Coruja — Analista", disc:"C — Cumpridor", cor:"#4478dd", grad:"linear-gradient(135deg,#4478dd,#2a54ab)",
+  frase:"Lógica e qualidade: enxerga o detalhe que ninguém vê.",
   essencia:"Movida a lógica e qualidade, a Coruja enxerga no escuro: o detalhe e o risco que ninguém viu. Prefere fazer certo a fazer rápido — e raramente erra.",
   super:["Enxerga o detalhe e o risco que ninguém percebeu","O que passa pela sua mão sai bem-feito — qualidade é assinatura","Opiniões sempre embasadas: fato junto com argumento","Memória de processo: sabe o histórico e o porquê de cada regra"],
   tratamento:["Com lógica: explique o porquê das coisas","Com tempo: análise de qualidade não sai no grito","Com critérios claros: regras difusas incomodam","Com feedback baseado em fatos, não em impressões"],
@@ -426,17 +504,20 @@ const perfis = {
   atencao:["Paralisia por análise: pode travar esperando dados completos","Dificuldade em decidir com informação parcial","Pode soar fria ou excessivamente crítica sem perceber","Perfeccionismo pode atrasar entregas que já estavam boas"],
   estresse:["Perfeccionismo paralisante — refaz o que já estava pronto","Crítica ácida a colegas e processos","Excesso de perguntas e desconfiança de tudo"],
   apoioEstresse:"Dê critérios claros e prazos realistas. Valide explicitamente a competência dela — sob estresse, a Coruja duvida primeiro de si mesma, depois de todo o resto.",
+  engajado:["Antecipa erros e propõe melhorias de processo","Compartilha análises detalhadas sem ser cobrada"],
+  desmotiva:"Pressão por decisão sem dados, críticas sem evidência e interrupção constante do foco — a Coruja trava e se fecha.",
   oneOnOne:"Envie a pauta antes (ela vai chegar preparada). Discuta com dados e respeite o tempo de resposta — a pausa dela não é vazio, é processamento.",
-  funcoes:["Controle de qualidade e conformidade","Planejamento e torre de controle","Análise de indicadores e relatórios","Auditoria de processos e melhoria contínua"],
+  funcoes:["Controle de qualidade e conformidade","Planejamento e Controle (PCP) / torre de controle","Análise de indicadores e relatórios","Auditoria de processos e melhoria contínua"],
   motivar:"Tempo para analisar, critérios claros e reconhecimento pela qualidade técnica.",
   feedbackTxt:"Traga dados e exemplos concretos. Feedback vago ou 'de percepção' será contestado — com razão.",
   evitar:"Exigir decisões instantâneas sem dados, criticar sem evidência ou interromper seu foco constantemente.",
   acao:"Defina prazo-limite claro para uma análise em curso — evita o loop infinito de refinamento.",
   pdi:"Decidir com 80%: praticar decisões pequenas com informação parcial e prazo curto.",
-  logistica:"Com a automação avançando nas operações, a Coruja se valoriza em controle, planejamento e qualidade — funções em alta no setor."}
+  logistica:"Com a automação avançando nas operações, a Coruja se valoriza em controle, planejamento e qualidade — funções em alta no setor.",
+  lideranca:"Perfil C (Cumpridor): precisão e respeito a normas. Estudos de 2025 recomendam alocar perfis analíticos em Planejamento e Controle (PCP) e qualidade — funções que pedem concentração e método, o habitat natural da Coruja."}
 };
 
-/* ===================== BLENDS (principal + secundário) ===================== */
+/* ===================== BLENDS ===================== */
 const blends = {
  "EX-CM":"Águia com traço de Pavão: decide rápido E vende bem a decisão — liderança natural que arrasta o time junto.",
  "EX-PL":"Águia com traço de Pomba: raro equilíbrio entre pressa e paciência; decide rápido, mas sustenta o combinado até o fim.",
@@ -467,60 +548,50 @@ const duplasInfo = {
 };
 
 const insightLog = "<b>Panorama de mercado (Logística, 2025-2026):</b> turnover voluntário responde por 60-70% dos desligamentos do setor; entre trabalhadores até 29 anos, ~40% trocaram de emprego em um ano (LCA Consultores). Alinhar perfil comportamental à função e à liderança é um dos fatores de retenção mais eficazes.";
+const insightProcesso = "<b>Dica estratégica (DISC 2025):</b> análise comportamental rende mais como <b>processo contínuo</b>, não evento único. Revisite os perfis periodicamente e cruze com engajamento, rotatividade e clima — a leitura evolui com a pessoa.";
 
-/* ===================== STORAGE + MIGRAÇÃO ===================== */
+/* ===================== STORAGE LOCAL (cache do ambiente ativo) ===================== */
+function novoWs(){ return {id:null, nome:"", pin:null, departamentos:DEPTS_PADRAO.slice(), colabs:[], respostas:{}, notas:{}}; }
 function db(){
-  try{
-    let d = JSON.parse(localStorage.getItem(LS_KEY));
-    if(!d){
-      const antigo = JSON.parse(localStorage.getItem(LS_KEY_OLD));
-      if(antigo){ d = antigo; d.notas = d.notas||{}; localStorage.setItem(LS_KEY, JSON.stringify(d)); }
-    }
-    d = d || {pin:null,colabs:[],respostas:{},notas:{}};
-    d.notas = d.notas||{};
-    return d;
-  }
-  catch(e){ return {pin:null,colabs:[],respostas:{},notas:{}}; }
+  try{ let d = JSON.parse(localStorage.getItem(LS_KEY)); d = d || novoWs(); d.departamentos = d.departamentos||DEPTS_PADRAO.slice(); d.notas=d.notas||{}; return d; }
+  catch(e){ return novoWs(); }
 }
 function salvar(d){ localStorage.setItem(LS_KEY, JSON.stringify(d)); }
 function hashPin(p){ let h=0; for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;} return "h"+h; }
-
-/* ===================== NUVEM (SUPABASE) =====================
-   Preencha as duas constantes abaixo com os dados do seu projeto
-   Supabase (Settings > API). Deixe em branco para modo local. */
-const SUPABASE_URL = "https://xleruhnrkwxtvszmemxx.supabase.co";
-const SUPABASE_KEY = "sb_publishable_MaPkHCKisbpkjNtsf6vODg_0uiNIpgU";
-
-const nuvemOn = () => SUPABASE_URL.length > 0 && SUPABASE_KEY.length > 0;
-function sbHeaders(extra){
-  return Object.assign({apikey:SUPABASE_KEY, Authorization:"Bearer "+SUPABASE_KEY, "Content-Type":"application/json"}, extra||{});
+function gerarCodigo(){
+  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s="";
+  for(let i=0;i<4;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  return "DENGO-"+s;
 }
-async function sbFetch(path, opts){
-  const r = await fetch(SUPABASE_URL+"/rest/v1/"+path, opts);
-  if(!r.ok) throw new Error("Supabase "+r.status);
-  const txt = await r.text();
-  return txt ? JSON.parse(txt) : null;
+
+/* ===================== NUVEM: GESTORES/WORKSPACES ===================== */
+async function nuvemCriarGestor(g){
+  if(!nuvemOn()) return;
+  await sbFetch("gestores", {method:"POST", headers:sbHeaders({Prefer:"resolution=merge-duplicates"}),
+    body:JSON.stringify([{id:g.id, nome:g.nome, pin:g.pin, departamentos:g.departamentos, criado:new Date().toISOString()}])});
 }
-async function nuvemCarregar(){
+async function nuvemGetGestor(id){
+  if(!nuvemOn()) return null;
+  const r = await sbFetch("gestores?id=eq."+encodeURIComponent(id)+"&select=*", {headers:sbHeaders()});
+  return (r && r.length) ? r[0] : null;
+}
+async function nuvemUpdateDeptos(id, deptos){
+  if(!nuvemOn()) return;
+  await sbFetch("gestores?id=eq."+encodeURIComponent(id), {method:"PATCH", headers:sbHeaders(),
+    body:JSON.stringify({departamentos:deptos})});
+}
+async function nuvemCarregarWorkspace(wsId){
   if(!nuvemOn()) return false;
   try{
     const [colabs, resps] = await Promise.all([
-      sbFetch("colaboradores?select=*&order=criado.asc", {headers:sbHeaders()}),
+      sbFetch("colaboradores?workspace_id=eq."+encodeURIComponent(wsId)+"&select=*&order=criado.asc", {headers:sbHeaders()}),
       sbFetch("respostas?select=*", {headers:sbHeaders()})
     ]);
-    const loc = db();
-    if(colabs.length===0 && loc.colabs.length>0){
-      for(const c of loc.colabs){ await nuvemUpsertColab(c, loc.notas[c.id]); }
-      for(const cid of Object.keys(loc.respostas)){ await nuvemUpsertResposta(cid, loc.respostas[cid]); }
-      toast("☁️ Dados locais migrados para a nuvem!");
-      return true;
-    }
     const d = db();
-    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
-    d.notas = {};
-    colabs.forEach(c=>{ if(c.nota) d.notas[c.id]=c.nota; });
-    d.respostas = {};
-    resps.forEach(r=>{ d.respostas[r.colab_id] = {data:r.data, contagem:r.contagem}; });
+    const ids = new Set(colabs.map(c=>c.id));
+    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
+    d.notas = {}; colabs.forEach(c=>{ if(c.nota) d.notas[c.id]=c.nota; });
+    d.respostas = {}; resps.forEach(r=>{ if(ids.has(r.colab_id)) d.respostas[r.colab_id] = {data:r.data, contagem:r.contagem}; });
     salvar(d);
     return true;
   }catch(e){ console.warn(e); toast("⚠️ Sem conexão com a nuvem — usando dados locais."); return false; }
@@ -529,7 +600,7 @@ async function nuvemUpsertColab(c, nota){
   if(!nuvemOn()) return;
   try{
     await sbFetch("colaboradores", {method:"POST", headers:sbHeaders({Prefer:"resolution=merge-duplicates"}),
-      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
+      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", workspace_id:gestorAtual?gestorAtual.id:c.workspace_id||null, criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
   }catch(e){ toast("⚠️ Falha ao salvar na nuvem — dado mantido localmente."); }
 }
 async function nuvemDeleteColab(id){
@@ -550,16 +621,22 @@ async function nuvemDeleteResposta(colabId){
   if(!nuvemOn()) return;
   try{ await sbFetch("respostas?colab_id=eq."+colabId, {method:"DELETE", headers:sbHeaders()}); }catch(e){}
 }
+async function nuvemGetColab(id){
+  if(!nuvemOn()) return null;
+  const r = await sbFetch("colaboradores?id=eq."+encodeURIComponent(id)+"&select=*", {headers:sbHeaders()});
+  return (r && r.length) ? r[0] : null;
+}
 function atualizarBadgeNuvem(){
   const b = document.getElementById("cloudBadge");
   if(!b) return;
   if(nuvemOn()){ b.textContent="☁️ nuvem conectada"; b.style.background="var(--pl)"; }
 }
 
-/* ===================== NAVEGAÇÃO ===================== */
+/* ===================== NAVEGAÇÃO / ESTADO ===================== */
 let quizAlvo = null;
 let quizPerguntasAtuais = [];
-let gestorLiberado = false;
+let gestorAtual = null;   // {id, nome, departamentos}
+let respWsCtx = null;     // contexto de resposta do colaborador (workspace)
 
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
@@ -573,23 +650,41 @@ function toast(msg){
 }
 function embaralhar(arr){
   const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; }
   return a;
 }
 
 /* ===================== FLUXO COLABORADOR ===================== */
-async function irParaResponder(){
-  if(nuvemOn()){ toast("☁️ Carregando o time..."); await nuvemCarregar(); }
+function irCodigoEquipe(){ document.getElementById("codEquipeInput").value=""; show("scr-codigo"); }
+
+async function entrarComoColaborador(){
+  const code = document.getElementById("codEquipeInput").value.trim().toUpperCase();
+  if(!code){ alert("Digite o código da equipe."); return; }
+  if(nuvemOn()){
+    toast("Buscando equipe...");
+    const g = await nuvemGetGestor(code);
+    if(!g){ alert("Código não encontrado. Confira com seu gestor."); return; }
+    respWsCtx = code;
+    await nuvemCarregarWorkspace(code);
+    listarQuem(g.nome);
+  } else {
+    const d = db();
+    if(d.id!==code){ alert("Em modo local, use este dispositivo com o ambiente do gestor aberto."); return; }
+    respWsCtx = code; listarQuem(d.nome);
+  }
+}
+
+function listarQuem(nomeEquipe){
   const d = db();
-  if(d.colabs.length===0){ alert("Nenhum colaborador cadastrado ainda. Peça ao gestor para cadastrar o time na Área do Gestor."); return; }
+  document.getElementById("quemSub").innerHTML = "Equipe: <b>"+(nomeEquipe||"")+"</b>. Selecione seu nome para começar.";
   const l = document.getElementById("listaQuem");
-  l.innerHTML = d.colabs.map(c=>{
-    const done = d.respostas[c.id] ? " <span style='font-size:11px;color:var(--pl);'>(já respondeu — refaz e substitui)</span>" : "";
-    return `<button class="big-btn sec" onclick="iniciarQuiz('${c.id}')">${c.nome}<small>${c.cargo||""}${done}</small></button>`;
-  }).join("");
+  if(d.colabs.length===0){ l.innerHTML="<div class='sub'>Nenhum colaborador cadastrado nesta equipe ainda.</div>"; }
+  else{
+    l.innerHTML = d.colabs.map(c=>{
+      const done = d.respostas[c.id] ? " <span style='font-size:11px;color:var(--pl);'>(já respondeu — refaz e substitui)</span>" : "";
+      return `<button class="big-btn sec" onclick="iniciarQuiz('${c.id}')">${c.nome}<small>${c.cargo||""}${c.departamento?" • "+c.departamento:""}${done}</small></button>`;
+    }).join("");
+  }
   show("scr-quem");
 }
 
@@ -598,8 +693,7 @@ function iniciarQuiz(id){
   const c = d.colabs.find(x=>x.id===id);
   if(!c){ alert("Colaborador não encontrado."); return; }
   quizAlvo = c;
-  quizPerguntasAtuais = embaralhar(bancoPerguntas).slice(0, QTD_PERGUNTAS)
-    .map(q=>({t:q.t, opts:embaralhar(q.opts)}));
+  quizPerguntasAtuais = embaralhar(bancoPerguntas).slice(0, QTD_PERGUNTAS).map(q=>({t:q.t, opts:embaralhar(q.opts)}));
   document.getElementById("quizTitulo").innerText = `Olá, ${c.nome.split(" ")[0]}! 👋`;
   const qDiv = document.getElementById("quizPerguntas");
   qDiv.innerHTML = "";
@@ -643,7 +737,6 @@ function perfilPrincipal(contagem){
   const ord = Object.entries(contagem).sort((a,b)=>b[1]-a[1]);
   return {principal:ord[0][0], secundario:ord[1][0], ord};
 }
-
 function barras(contagem){
   const total = QTD_PERGUNTAS;
   const ord = Object.entries(contagem).sort((a,b)=>b[1]-a[1]);
@@ -656,7 +749,6 @@ function barras(contagem){
 /* ===================== RADAR SVG ===================== */
 function radarSVG(contagem, cor){
   const cx=140, cy=130, r=95;
-  // eixos: Águia (topo), Pavão (direita), Pomba (baixo), Coruja (esquerda)
   const eixos = [
     {k:"EX", dx:0, dy:-1, lx:cx, ly:cy-r-16, anchor:"middle"},
     {k:"CM", dx:1, dy:0, lx:cx+r+10, ly:cy+4, anchor:"start"},
@@ -669,10 +761,7 @@ function radarSVG(contagem, cor){
     grid += `<polygon points="${pts}" fill="none" stroke="#d5dae3" stroke-width="1"/>`;
   });
   let axes = eixos.map(e=>`<line x1="${cx}" y1="${cy}" x2="${cx+e.dx*r}" y2="${cy+e.dy*r}" stroke="#d5dae3" stroke-width="1"/>`).join("");
-  const dataPts = eixos.map(e=>{
-    const f = (contagem[e.k]||0)/QTD_PERGUNTAS;
-    return `${cx+e.dx*r*f},${cy+e.dy*r*f}`;
-  }).join(" ");
+  const dataPts = eixos.map(e=>{ const f = (contagem[e.k]||0)/QTD_PERGUNTAS; return `${cx+e.dx*r*f},${cy+e.dy*r*f}`; }).join(" ");
   const labels = eixos.map(e=>{
     const pct = Math.round((contagem[e.k]||0)/QTD_PERGUNTAS*100);
     return `<text x="${e.lx}" y="${e.ly}" text-anchor="${e.anchor}" font-size="12" font-weight="700" fill="${perfis[e.k].cor}">${perfis[e.k].emoji} ${perfis[e.k].nome} ${pct}%</text>`;
@@ -680,14 +769,10 @@ function radarSVG(contagem, cor){
   return `<svg viewBox="0 0 280 270" style="max-width:320px;display:block;margin:0 auto;">
     ${grid}${axes}
     <polygon points="${dataPts}" fill="${cor}44" stroke="${cor}" stroke-width="2.5"/>
-    ${eixos.map(e=>{
-      const f=(contagem[e.k]||0)/QTD_PERGUNTAS;
-      return `<circle cx="${cx+e.dx*r*f}" cy="${cy+e.dy*r*f}" r="4" fill="${cor}"/>`;
-    }).join("")}
+    ${eixos.map(e=>{ const f=(contagem[e.k]||0)/QTD_PERGUNTAS; return `<circle cx="${cx+e.dx*r*f}" cy="${cy+e.dy*r*f}" r="4" fill="${cor}"/>`; }).join("")}
     ${labels}
   </svg>`;
 }
-
 function intensidade(contagem){
   const max = Math.max(...Object.values(contagem));
   const pct = max/QTD_PERGUNTAS*100;
@@ -696,7 +781,7 @@ function intensidade(contagem){
   return {nivel:"Perfil híbrido/equilibrado", txt:"Nenhum estilo domina com folga — pessoa versátil, que adapta o comportamento ao contexto. O lado B: pode ser mais difícil de 'ler' e prever."};
 }
 
-/* ===================== DEVOLUTIVA ===================== */
+/* ===================== DEVOLUTIVA (colaborador) ===================== */
 function renderDevolutiva(c, contagem){
   const {principal, secundario} = perfilPrincipal(contagem);
   const P = perfis[principal], S = perfis[secundario];
@@ -705,8 +790,8 @@ function renderDevolutiva(c, contagem){
    <div class="hero" style="background:${P.grad}">
      <div style="font-size:13px;opacity:.85;">Devolutiva de ${c.nome}</div>
      <h2>${P.emoji} ${P.apelido}</h2>
-     <div class="apelido">com um toque de ${S.nome} ${S.emoji}</div>
-     <div class="chips"><span class="chip">Perfil predominante</span><span class="chip">${new Date().toLocaleDateString("pt-BR")}</span></div>
+     <div class="apelido">${P.frase} — com um toque de ${S.nome} ${S.emoji}</div>
+     <div class="chips"><span class="chip">Perfil ${P.disc}</span><span class="chip">${new Date().toLocaleDateString("pt-BR")}</span></div>
    </div>
    <div class="card">
      <p style="font-size:14px;line-height:1.6;">${P.essencia}</p>
@@ -728,42 +813,56 @@ function renderDevolutiva(c, contagem){
    </div>`;
 }
 
-/* ===================== PIN / GESTOR ===================== */
-function pedirPin(){
-  const d = db();
-  const criar = !d.pin;
-  document.getElementById("pinSub").innerText = criar
-    ? "Primeiro acesso: crie um PIN para proteger a área do gestor."
-    : "Digite seu PIN para acessar.";
-  document.getElementById("pinConfirmWrap").style.display = criar ? "block" : "none";
-  document.getElementById("pinInput").value = "";
-  document.getElementById("pinConfirm").value = "";
-  show("scr-pin");
+/* ===================== GESTOR: GATE (entrar/criar) ===================== */
+function irGestorGate(){
+  ["gateCodigo","gatePin","gateNome","gateNovoPin","gateNovoPin2"].forEach(id=>document.getElementById(id).value="");
+  show("scr-gestor-gate");
 }
-function validarPin(){
-  const d = db();
-  const v = document.getElementById("pinInput").value.trim();
-  if(v.length < 4){ alert("PIN precisa de ao menos 4 dígitos."); return; }
-  if(!d.pin){
-    const conf = document.getElementById("pinConfirm").value.trim();
-    if(v!==conf){ alert("Os PINs não conferem."); return; }
-    d.pin = hashPin(v); salvar(d);
-    toast("PIN criado! Guarde bem.");
-  } else if(hashPin(v)!==d.pin){ alert("PIN incorreto."); return; }
-  gestorLiberado = true;
+async function criarAmbiente(){
+  const nome = document.getElementById("gateNome").value.trim();
+  const pin = document.getElementById("gateNovoPin").value.trim();
+  const pin2 = document.getElementById("gateNovoPin2").value.trim();
+  if(!nome){ alert("Informe seu nome / nome da equipe."); return; }
+  if(pin.length<4){ alert("O PIN precisa de ao menos 4 dígitos."); return; }
+  if(pin!==pin2){ alert("Os PINs não conferem."); return; }
+  const id = gerarCodigo();
+  gestorAtual = {id, nome, departamentos:DEPTS_PADRAO.slice()};
+  const d = novoWs(); d.id=id; d.nome=nome; d.pin=hashPin(pin); d.departamentos=DEPTS_PADRAO.slice(); salvar(d);
+  if(nuvemOn()){
+    try{ await nuvemCriarGestor({id, nome, pin:hashPin(pin), departamentos:DEPTS_PADRAO.slice()}); }
+    catch(e){ alert("Não consegui criar na nuvem agora. Verifique a conexão e tente de novo."); return; }
+  }
+  toast("Ambiente criado! Código: "+id);
+  alert("Ambiente criado com sucesso!\n\nSeu código da equipe é: "+id+"\n\nGuarde-o: é ele que sua equipe usa para responder. O PIN é só seu.");
   abrirGestor();
 }
-function bloquear(){ gestorLiberado=false; show("scr-home"); toast("Área do gestor bloqueada."); }
-function resetarPin(){
-  if(!confirm("Redefinir o PIN? Os dados dos colaboradores são mantidos.")) return;
-  const d = db(); d.pin=null; salvar(d);
-  gestorLiberado=false; pedirPin();
+async function entrarAmbiente(){
+  const code = document.getElementById("gateCodigo").value.trim().toUpperCase();
+  const pin = document.getElementById("gatePin").value.trim();
+  if(!code || !pin){ alert("Informe código e PIN."); return; }
+  if(nuvemOn()){
+    const g = await nuvemGetGestor(code);
+    if(!g){ alert("Código não encontrado."); return; }
+    if(g.pin !== hashPin(pin)){ alert("PIN incorreto."); return; }
+    gestorAtual = {id:g.id, nome:g.nome, departamentos:(g.departamentos&&g.departamentos.length)?g.departamentos:DEPTS_PADRAO.slice()};
+    const d = novoWs(); d.id=g.id; d.nome=g.nome; d.pin=g.pin; d.departamentos=gestorAtual.departamentos; salvar(d);
+    await nuvemCarregarWorkspace(code);
+  } else {
+    const d = db();
+    if(d.id!==code || d.pin!==hashPin(pin)){ alert("Código ou PIN incorretos (modo local)."); return; }
+    gestorAtual = {id:d.id, nome:d.nome, departamentos:d.departamentos};
+  }
+  abrirGestor();
 }
+function bloquear(){ gestorAtual=null; show("scr-home"); toast("Você saiu do ambiente."); }
 
-async function abrirGestor(){
-  if(!gestorLiberado){ pedirPin(); return; }
-  if(nuvemOn()){ toast("☁️ Sincronizando com a nuvem..."); await nuvemCarregar(); }
+function abrirGestor(){
+  if(!gestorAtual){ irGestorGate(); return; }
+  document.getElementById("wsNomeBadge").innerText = gestorAtual.nome + " • " + gestorAtual.id;
+  document.getElementById("wsCodigoShow").innerText = gestorAtual.id;
+  renderDeptosSelects(); renderDeptosConfig();
   renderColabs(); renderSelects(); renderMapa(); renderDinamica();
+  document.querySelector('.tab[data-tab="tab-colabs"]').click();
   show("scr-gestor");
 }
 function abaGestor(el){
@@ -774,6 +873,48 @@ function abaGestor(el){
   if(el.dataset.tab==="tab-mapa") renderMapa();
   if(el.dataset.tab==="tab-dinamica") renderDinamica();
   if(el.dataset.tab==="tab-relatorio") renderRelatorio();
+  if(el.dataset.tab==="tab-config") renderDeptosConfig();
+}
+
+/* ===================== DEPARTAMENTOS ===================== */
+function renderDeptosSelects(){
+  const deptos = gestorAtual.departamentos;
+  const opts = deptos.map(x=>`<option value="${x}">${x}</option>`).join("");
+  document.getElementById("novoDepto").innerHTML = opts;
+  const filtColab = document.getElementById("filtroDeptoColab");
+  const filtMapa = document.getElementById("filtroDeptoMapa");
+  const todosOpt = `<option value="">Todos os departamentos</option>`;
+  filtColab.innerHTML = todosOpt + opts;
+  filtMapa.innerHTML = todosOpt + opts;
+}
+function renderDeptosConfig(){
+  if(!gestorAtual) return;
+  const el = document.getElementById("listaDeptos");
+  el.innerHTML = gestorAtual.departamentos.map(x=>
+    `<span class="deptpill">${x} <b onclick="removeDepto('${x.replace(/'/g,"\\'")}')" title="remover">✕</b></span>`).join("") || "<span class='sub'>Nenhum departamento.</span>";
+}
+async function addDepto(){
+  const v = document.getElementById("novoDeptoNome").value.trim();
+  if(!v){ return; }
+  if(gestorAtual.departamentos.includes(v)){ alert("Esse departamento já existe."); return; }
+  gestorAtual.departamentos.push(v);
+  document.getElementById("novoDeptoNome").value="";
+  const d = db(); d.departamentos = gestorAtual.departamentos; salvar(d);
+  await nuvemUpdateDeptos(gestorAtual.id, gestorAtual.departamentos);
+  renderDeptosConfig(); renderDeptosSelects();
+  toast("Departamento adicionado!");
+}
+async function removeDepto(nome){
+  gestorAtual.departamentos = gestorAtual.departamentos.filter(x=>x!==nome);
+  const d = db(); d.departamentos = gestorAtual.departamentos; salvar(d);
+  await nuvemUpdateDeptos(gestorAtual.id, gestorAtual.departamentos);
+  renderDeptosConfig(); renderDeptosSelects();
+  toast("Departamento removido.");
+}
+function copiarCodigo(){
+  const code = gestorAtual.id;
+  if(navigator.clipboard){ navigator.clipboard.writeText(code).then(()=>toast("Código copiado!")); }
+  else prompt("Copie o código:", code);
 }
 
 /* ===================== CADASTRO + CONVITE ===================== */
@@ -781,16 +922,15 @@ async function cadastrar(){
   const nome = document.getElementById("novoNome").value.trim();
   const cargo = document.getElementById("novoCargo").value.trim();
   const email = document.getElementById("novoEmail").value.trim();
+  const departamento = document.getElementById("novoDepto").value;
   if(!nome){ alert("Informe o nome."); return; }
   if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ alert("E-mail inválido."); return; }
   const d = db();
-  const novo = {id:"c"+Date.now(), nome, cargo, email, criado:new Date().toISOString()};
+  const novo = {id:"c"+Date.now(), nome, cargo, email, departamento, criado:new Date().toISOString()};
   d.colabs.push(novo);
   salvar(d);
   await nuvemUpsertColab(novo);
-  document.getElementById("novoNome").value="";
-  document.getElementById("novoCargo").value="";
-  document.getElementById("novoEmail").value="";
+  ["novoNome","novoCargo","novoEmail"].forEach(id=>document.getElementById(id).value="");
   renderColabs(); renderSelects();
   toast(nome+" cadastrado(a)!");
 }
@@ -799,8 +939,7 @@ async function descadastrar(id){
   const c = d.colabs.find(x=>x.id===id);
   if(!confirm(`Descadastrar ${c.nome}? O perfil e as respostas serão removidos.`)) return;
   d.colabs = d.colabs.filter(x=>x.id!==id);
-  delete d.respostas[id];
-  delete d.notas[id];
+  delete d.respostas[id]; delete d.notas[id];
   salvar(d);
   await nuvemDeleteColab(id);
   renderColabs(); renderSelects(); renderMapa(); renderDinamica();
@@ -812,32 +951,27 @@ async function refazerResposta(id){
   await nuvemDeleteResposta(id);
   renderColabs(); renderSelects();
 }
-function linkDe(id){
-  const base = location.href.split("?")[0].split("#")[0];
-  return base + "?c=" + id;
-}
+function linkDe(id){ const base = location.href.split("?")[0].split("#")[0]; return base + "?c=" + id; }
 function copiarLink(id){
   const url = linkDe(id);
   if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=>toast("Link copiado!")); }
-  else { prompt("Copie o link:", url); }
+  else prompt("Copie o link:", url);
 }
 function corpoConvite(c){
-  return `Olá, ${c.nome.split(" ")[0]}!\n\nVocê foi convidado(a) para a Essência — nossa dinâmica de perfis comportamentais. Conhecer para evoluir!\n\nSão 10 perguntas rápidas e leves sobre você (nada de pegadinha, sem resposta certa ou errada). Ao final, você recebe na hora sua devolutiva com seus superpoderes e seu jeito de funcionar melhor.\n\nAcesse pelo link abaixo ou, se preferir, abra a ferramenta Essência e selecione seu nome:\n${linkDe(c.id)}\n\nLeva 5 minutos. Responda com sinceridade — o resultado é seu!\n\nAbraço,\nRick`;
+  return `Olá, ${c.nome.split(" ")[0]}!\n\nVocê foi convidado(a) para a Essência — nossa dinâmica de perfis comportamentais. Conhecer para evoluir!\n\nSão 10 perguntas rápidas e leves sobre você (sem resposta certa ou errada). Ao final, você recebe na hora sua devolutiva com seus superpoderes.\n\n1) Acesse: ${linkDe(c.id)}\n2) Ou abra a ferramenta, clique em "Responder meu questionário" e informe o código da equipe: ${gestorAtual?gestorAtual.id:""}\n\nLeva 5 minutos. Responda com sinceridade — o resultado é seu!\n\nAbraço,\n${gestorAtual?gestorAtual.nome:"Gestão"}`;
 }
 async function convidar(id){
   const d = db();
   const c = d.colabs.find(x=>x.id===id);
   if(!c.email){ alert("Este colaborador não tem e-mail cadastrado."); return; }
   if(nuvemOn() && location.protocol==="file:"){
-    alert("Atenção: você está abrindo a Essência pelo arquivo local. Abra a versão publicada (link do GitHub Pages) antes de convidar — assim o link enviado será o link público que funciona para todos.");
+    alert("Atenção: abra a versão publicada (GitHub Pages) antes de convidar — assim o link será o público.");
   }
   const url = `mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent("Convite: Essência — conhecer para evoluir 🧭")}&body=${encodeURIComponent(corpoConvite(c))}`;
   window.location.href = url;
-  const d2 = db();
-  const c2 = d2.colabs.find(x=>x.id===id);
-  c2.convidadoEm = new Date().toISOString();
-  salvar(d2);
-  await nuvemUpsertColab(c2, d2.notas[id]);
+  c.convidadoEm = new Date().toISOString();
+  salvar(d);
+  await nuvemUpsertColab(c, d.notas[id]);
   setTimeout(renderColabs, 400);
 }
 function convidarPendentes(){
@@ -845,29 +979,32 @@ function convidarPendentes(){
   const pendentes = d.colabs.filter(c=>!d.respostas[c.id] && c.email);
   if(pendentes.length===0){ alert("Nenhum pendente com e-mail cadastrado."); return; }
   const emails = pendentes.map(c=>c.email).join(";");
-  const corpo = `Olá, time!\n\nVocês foram convidados para a Essência — nossa dinâmica de perfis comportamentais. Conhecer para evoluir!\n\nSão 10 perguntas rápidas e leves (sem resposta certa ou errada). Ao final, cada um recebe na hora sua devolutiva com seus superpoderes.\n\nAbram a ferramenta Essência e selecionem seu nome para responder. Leva 5 minutos!\n\nAbraço,\nRick`;
+  const corpo = `Olá, time!\n\nVocês foram convidados para a Essência — nossa dinâmica de perfis comportamentais.\n\nAbram a ferramenta, cliquem em "Responder meu questionário" e informem o código da equipe: ${gestorAtual.id}\n\nSão 10 perguntas rápidas. Leva 5 minutos!\n\nAbraço,\n${gestorAtual.nome}`;
   window.location.href = `mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent("Convite: Essência — conhecer para evoluir 🧭")}&body=${encodeURIComponent(corpo)}`;
 }
 function renderColabs(){
   const d = db();
+  const filtro = document.getElementById("filtroDeptoColab").value;
   const el = document.getElementById("listaColabs");
-  if(d.colabs.length===0){ el.innerHTML = "<div class='sub'>Nenhum colaborador cadastrado ainda.</div>"; return; }
-  el.innerHTML = "<table><tr><th>Nome</th><th>Cargo</th><th>E-mail</th><th>Status</th><th>Perfil</th><th>Ações</th></tr>" +
-   d.colabs.map(c=>{
+  let lista = d.colabs;
+  if(filtro) lista = lista.filter(c=>c.departamento===filtro);
+  if(lista.length===0){ el.innerHTML = "<div class='sub'>Nenhum colaborador"+(filtro?" neste departamento":" cadastrado ainda")+".</div>"; return; }
+  el.innerHTML = "<table><tr><th>Nome</th><th>Cargo</th><th>Depto</th><th>Status</th><th>Perfil</th><th>Ações</th></tr>" +
+   lista.map(c=>{
      const r = d.respostas[c.id];
      let perfil = "—", status = "<span class='status-pend'>Pendente</span>";
-     if(c.convidadoEm && !r) status = `<span class='status-pend'>Convidado</span><br><span style='font-size:11px;color:var(--muted)'>${new Date(c.convidadoEm).toLocaleDateString("pt-BR")}</span>`;
+     if(c.convidadoEm && !r) status = `<span class='status-pend'>Convidado</span>`;
      if(r){
        const {principal} = perfilPrincipal(r.contagem);
        perfil = `<span class="tag" style="background:${perfis[principal].cor}">${perfis[principal].emoji} ${perfis[principal].nome}</span>`;
        status = `<span class='status-ok'>Respondido</span><br><span style='font-size:11px;color:var(--muted)'>${new Date(r.data).toLocaleDateString("pt-BR")}</span>`;
      }
-     return `<tr><td><b>${c.nome}</b></td><td>${c.cargo||"—"}</td><td style="font-size:12px;">${c.email||"—"}</td><td>${status}</td><td>${perfil}</td>
+     return `<tr><td><b>${c.nome}</b></td><td>${c.cargo||"—"}</td><td>${c.departamento||"—"}</td><td>${status}</td><td>${perfil}</td>
        <td>
          ${c.email && !r?`<button class="mini" onclick="convidar('${c.id}')">✉️ Convidar</button>`:""}
-         <button class="mini sec" onclick="iniciarQuiz('${c.id}')">▶ Responder agora</button>
-         <button class="mini sec" onclick="copiarLink('${c.id}')">🔗 Link</button>
-         ${r?`<button class="mini sec" onclick="refazerResposta('${c.id}')">↺ Refazer</button>`:""}
+         <button class="mini sec" onclick="iniciarQuiz('${c.id}')">▶ Responder</button>
+         <button class="mini sec" onclick="copiarLink('${c.id}')">🔗</button>
+         ${r?`<button class="mini sec" onclick="refazerResposta('${c.id}')">↺</button>`:""}
          <button class="mini danger" onclick="descadastrar('${c.id}')">✕</button>
        </td></tr>`;
    }).join("") + "</table>";
@@ -877,7 +1014,7 @@ function renderColabs(){
 function renderSelects(){
   const d = db();
   const respondidos = d.colabs.filter(c=>d.respostas[c.id]);
-  const opts = respondidos.map(c=>`<option value="${c.id}">${c.nome}</option>`).join("");
+  const opts = respondidos.map(c=>`<option value="${c.id}">${c.nome}${c.departamento?" ("+c.departamento+")":""}</option>`).join("");
   document.getElementById("selRelatorio").innerHTML = opts || "<option value=''>— ninguém respondeu ainda —</option>";
   document.getElementById("selDupla1").innerHTML = opts;
   document.getElementById("selDupla2").innerHTML = opts;
@@ -905,7 +1042,8 @@ function renderRelatorio(){
    <div class="hero" style="background:${P.grad}">
      <div style="font-size:13px;opacity:.85;">Relatório confidencial do gestor</div>
      <h2>${P.emoji} ${c.nome}</h2>
-     <div class="apelido">${c.cargo||""} • ${P.apelido} com traço de ${S.nome} ${S.emoji} • respondido em ${new Date(r.data).toLocaleDateString("pt-BR")}</div>
+     <div class="apelido">${c.cargo||""}${c.departamento?" • "+c.departamento:""} • ${P.apelido} (${P.disc}) com traço de ${S.nome} ${S.emoji}</div>
+     <div class="chips"><span class="chip">${P.frase}</span><span class="chip">respondido em ${new Date(r.data).toLocaleDateString("pt-BR")}</span></div>
    </div>
    <div class="card">
      <h3>📡 Radar comportamental</h3>
@@ -931,13 +1069,17 @@ function renderRelatorio(){
    </div>
    <div class="row">
      <div class="col card">
-       <h3>🚨 Sinais de estresse (fique de olho)</h3>
+       <h3>✅ Sinais de que está ENGAJADO</h3>
+       <ul class="tight">${P.engajado.map(s=>`<li>${s}</li>`).join("")}</ul>
+       <h3>🚨 Sinais de estresse / alerta</h3>
        <ul class="tight">${P.estresse.map(s=>`<li>${s}</li>`).join("")}</ul>
-       <div class="box gold"><b>Como apoiar:</b> ${P.apoioEstresse}</div>
+       <div class="box gold"><b>Como apoiar sob estresse:</b> ${P.apoioEstresse}</div>
+       <div class="box red"><b>O que o desmotiva:</b> ${P.desmotiva}</div>
      </div>
      <div class="col card">
        <h3>🎯 Funções onde este perfil brilha (operação logística)</h3>
        <ul class="tight">${P.funcoes.map(s=>`<li>${s}</li>`).join("")}</ul>
+       <div class="insight">${P.lideranca}</div>
      </div>
    </div>
    <div class="card">
@@ -949,6 +1091,7 @@ function renderRelatorio(){
      <h3>🎯 PDI Pocket</h3>
      <div class="box gray"><b>Ação da semana:</b> ${P.acao}<br><b>Habilidade (3 meses):</b> ${P.pdi}</div>
      <div class="insight">${insightLog}<br><br><b>Leitura para este perfil:</b> ${P.logistica}</div>
+     <div class="insight">${insightProcesso}</div>
    </div>
    <div class="card no-print">
      <h3>📝 Anotações do gestor (privadas, salvas na ferramenta)</h3>
@@ -961,34 +1104,34 @@ function renderRelatorio(){
 /* ===================== MAPA DO TIME ===================== */
 function renderMapa(){
   const d = db();
+  const filtro = document.getElementById("filtroDeptoMapa").value;
   const area = document.getElementById("mapaArea");
-  const respondidos = d.colabs.filter(c=>d.respostas[c.id]);
-  if(respondidos.length===0){ area.innerHTML="<div class='card sub'>Ninguém respondeu ainda. O mapa aparece aqui conforme o time responde.</div>"; return; }
+  let respondidos = d.colabs.filter(c=>d.respostas[c.id]);
+  if(filtro) respondidos = respondidos.filter(c=>c.departamento===filtro);
+  if(respondidos.length===0){ area.innerHTML="<div class='card sub'>Ninguém respondeu ainda"+(filtro?" neste departamento":"")+". O mapa aparece aqui conforme o time responde.</div>"; return; }
   const cont = {EX:0,CM:0,PL:0,AN:0};
   respondidos.forEach(c=>{ cont[perfilPrincipal(d.respostas[c.id].contagem).principal]++; });
   const total = respondidos.length;
   let acc = 0; const fatias = [];
-  ["EX","CM","PL","AN"].forEach(k=>{
-    const pct = cont[k]/total*100;
-    if(pct>0){ fatias.push(`${perfis[k].cor} ${acc}% ${acc+pct}%`); acc+=pct; }
-  });
+  ["EX","CM","PL","AN"].forEach(k=>{ const pct = cont[k]/total*100; if(pct>0){ fatias.push(`${perfis[k].cor} ${acc}% ${acc+pct}%`); acc+=pct; } });
   const legenda = ["EX","CM","PL","AN"].map(k=>{
     const nomes = respondidos.filter(c=>perfilPrincipal(d.respostas[c.id].contagem).principal===k).map(c=>c.nome.split(" ")[0]).join(", ");
     return `<div><span class="dot" style="background:${perfis[k].cor}"></span><b>${perfis[k].emoji} ${perfis[k].nome}</b> — ${cont[k]} pessoa(s)${nomes?": "+nomes:""}</div>`;
   }).join("");
   const faltantes = ["EX","CM","PL","AN"].filter(k=>cont[k]===0).map(k=>perfis[k].emoji+" "+perfis[k].nome);
   const leitura = faltantes.length
-    ? `<div class="box gold"><b>Ponto cego do time:</b> não há nenhum perfil <b>${faltantes.join(", ")}</b>. As forças naturais desse(s) estilo(s) precisam ser cobertas conscientemente por alguém — ou contratadas.</div>`
-    : `<div class="box green"><b>Time completo:</b> os quatro bichos estão representados — diversidade comportamental é vantagem competitiva. Use as duplas complementares a favor.</div>`;
+    ? `<div class="box gold"><b>Ponto cego${filtro?" ("+filtro+")":" do time"}:</b> não há nenhum perfil <b>${faltantes.join(", ")}</b>. As forças naturais desse(s) estilo(s) precisam ser cobertas conscientemente por alguém — ou contratadas.</div>`
+    : `<div class="box green"><b>Time completo:</b> os quatro bichos estão representados — diversidade comportamental é vantagem competitiva.</div>`;
   area.innerHTML = `
    <div class="card">
-     <h2>🗺️ Mapa do Time (${total} respondente${total>1?"s":""})</h2>
+     <h2>🗺️ Mapa ${filtro?"— "+filtro:"do Time"} (${total} respondente${total>1?"s":""})</h2>
      <div class="row">
        <div class="col"><div class="donut" style="background:conic-gradient(${fatias.join(",")})"></div></div>
        <div class="col legend" style="align-self:center;">${legenda}</div>
      </div>
      ${leitura}
      <div class="insight">${insightLog}</div>
+     <div class="insight">${insightProcesso}</div>
      <button class="no-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
    </div>`;
 }
@@ -1043,7 +1186,7 @@ function renderDinamica(){
     const P = perfis[p];
     return `<div class="p-card" style="background:${P.grad}">
       <h4>${P.emoji} ${c.nome}</h4>
-      <div class="role">${c.cargo||""} • ${P.nome}</div>
+      <div class="role">${c.cargo||""}${c.departamento?" • "+c.departamento:""} • ${P.nome}</div>
       <b style="font-size:12px;">🌟 Superpoderes:</b>
       <ul>${P.super.slice(0,2).map(s=>`<li>${s}</li>`).join("")}</ul>
       <div style="margin-top:8px;font-size:12px;background:rgba(255,255,255,.18);border-radius:8px;padding:8px;"><b>🌱 Confissão de crescimento:</b><br><i>${P.partilha}</i></div>
@@ -1092,7 +1235,7 @@ function exportarBackup(){
   const blob = new Blob([JSON.stringify(db(),null,2)],{type:"application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "essencia_backup_"+new Date().toISOString().slice(0,10)+".json";
+  a.download = "essencia_"+(gestorAtual?gestorAtual.id:"backup")+"_"+new Date().toISOString().slice(0,10)+".json";
   a.click();
   toast("Backup exportado!");
 }
@@ -1104,10 +1247,13 @@ function importarBackup(ev){
     try{
       const dados = JSON.parse(e.target.result);
       if(!dados.colabs){ alert("Arquivo inválido."); return; }
-      if(!confirm("Substituir todos os dados atuais pelo backup?")) return;
+      if(!confirm("Restaurar este backup no ambiente atual? Os dados atuais em tela serão substituídos.")) return;
+      dados.id = gestorAtual.id; dados.nome = gestorAtual.nome;
+      dados.departamentos = dados.departamentos||gestorAtual.departamentos;
       dados.notas = dados.notas||{};
       salvar(dados);
-      renderColabs(); renderSelects(); renderMapa(); renderDinamica();
+      gestorAtual.departamentos = dados.departamentos;
+      renderDeptosSelects(); renderColabs(); renderSelects(); renderMapa(); renderDinamica();
       toast("Backup restaurado!");
     }catch(err){ alert("Não foi possível ler o arquivo."); }
   };
@@ -1120,14 +1266,22 @@ function importarBackup(ev){
   const params = new URLSearchParams(location.search);
   const cid = params.get("c");
   if(cid){
-    if(nuvemOn()) await nuvemCarregar();
-    const d = db();
-    const c = d.colabs.find(x=>x.id===cid);
-    if(c){ iniciarQuiz(cid); }
-    else { alert("Convite não encontrado. Peça um novo link ao gestor."); }
+    if(nuvemOn()){
+      const c = await nuvemGetColab(cid);
+      if(c){
+        respWsCtx = c.workspace_id;
+        if(c.workspace_id) await nuvemCarregarWorkspace(c.workspace_id);
+        const d = db();
+        if(!d.colabs.find(x=>x.id===cid)){ d.colabs.push({id:c.id,nome:c.nome,cargo:c.cargo||"",email:c.email||"",departamento:c.departamento||""}); salvar(d); }
+        iniciarQuiz(cid);
+      } else { alert("Convite não encontrado. Peça um novo link ao gestor."); }
+    } else {
+      const d = db();
+      const c = d.colabs.find(x=>x.id===cid);
+      if(c){ iniciarQuiz(cid); } else { alert("Convite não encontrado neste dispositivo."); }
+    }
   }
 })();
 </script>
 </body>
 </html>
-
