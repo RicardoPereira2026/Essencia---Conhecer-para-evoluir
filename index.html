@@ -550,6 +550,51 @@ const duplasInfo = {
 const insightLog = "<b>Panorama de mercado (Logística, 2025-2026):</b> turnover voluntário responde por 60-70% dos desligamentos do setor; entre trabalhadores até 29 anos, ~40% trocaram de emprego em um ano (LCA Consultores). Alinhar perfil comportamental à função e à liderança é um dos fatores de retenção mais eficazes.";
 const insightProcesso = "<b>Dica estratégica (DISC 2025):</b> análise comportamental rende mais como <b>processo contínuo</b>, não evento único. Revisite os perfis periodicamente e cruze com engajamento, rotatividade e clima — a leitura evolui com a pessoa.";
 
+/* ===================== DIRECIONAIS DENGO 2026 ===================== */
+const DENGO = {
+  objetivo:"Tornar nosso modelo de negócio lucrativo e sustentável",
+  metas:["EBITDA","Fluxo de Caixa","Margem Bruta (%)","NPS","Clima"],
+  imperativos:["Ganho expressivo de eficiência operacional (planejamento e rigor)","Portfólio inteligente com correto posicionamento de preço","Marca: ampliar a preferência pela Dengo","Experiência do cliente"],
+  cultura:"Somos genuinamente comprometidos e entregamos resultados",
+  comportamentos:["Busco soluções e faço acontecer","Ouvimos e encantamos nossos clientes","Entrego o resultado combinado e além","Sou responsável pelo resultado do todo"]
+};
+
+/* ===================== AUTOCONHECIMENTO (bloqueios) ===================== */
+const autoconhecimento = {
+ EX:{bloqueio:"A pressa. Quando quero tudo para ontem, atropelo pessoas e detalhes — e a conta chega depois.",
+     antidoto:"Pausar antes de decidir e me perguntar: 'o que estou deixando passar?'. Trazer alguém junto na decisão.",
+     reflexao:"Na última vez que algo deu errado por eu ter ido rápido demais, o que eu teria visto se tivesse parado 5 minutos?"},
+ CM:{bloqueio:"O receio de desagradar. Para preservar o clima, às vezes evito a conversa difícil que precisava acontecer.",
+     antidoto:"Lembrar que uma conversa franca hoje evita um problema maior amanhã — confrontar com carinho também é cuidar.",
+     reflexao:"Que conversa importante eu venho adiando para não estragar o clima?"},
+ PL:{bloqueio:"O medo da mudança e do conflito. Fico quieto, me acomodo e guardo o que penso até saturar.",
+     antidoto:"Dizer minha opinião cedo, em pequenas doses, antes que vire acúmulo. Encarar mudança como experimento, não ameaça.",
+     reflexao:"O que eu penso mas não tenho dito — e o que me impede de falar?"},
+ AN:{bloqueio:"A busca pela perfeição. Espero ter 100% dos dados e travo, quando 80% já bastava para agir.",
+     antidoto:"Definir um prazo e decidir com o que tenho. Combinar comigo mesmo o 'bom o suficiente' antes de começar.",
+     reflexao:"Onde meu perfeccionismo está me travando agora — e qual seria o 'bom o suficiente' para avançar?"}
+};
+
+/* ===================== CONEXÃO PERFIL × DENGO ===================== */
+const dengoMap = {
+ EX:{forte:["Busco soluções e faço acontecer","Entrego o resultado combinado e além"],
+     estica:"Sou responsável pelo resultado do todo — trazer o time junto, não só a própria meta.",
+     imperativo:"Impulsiona o Ganho de eficiência operacional: destrava, decide e faz girar. Impacto direto em EBITDA e Fluxo de Caixa.",
+     colab:"Você é puro 'busco soluções e faço acontecer'. O próximo nível é fazer o resultado ser do todo — levar o time junto na sua velocidade."},
+ CM:{forte:["Ouvimos e encantamos nossos clientes"],
+     estica:"Entrego o resultado combinado e além — transformar entusiasmo em entrega consistente.",
+     imperativo:"Fortalece a Marca (preferência pela Dengo) e a Experiência do cliente. Impacto em NPS e Clima.",
+     colab:"Você encanta pessoas e clientes naturalmente — vive o 'ouvimos e encantamos'. Seu crescimento é fechar ciclos com a mesma energia com que os abre."},
+ PL:{forte:["Sou responsável pelo resultado do todo"],
+     estica:"Busco soluções e faço acontecer — mais iniciativa: propor antes de ser pedido.",
+     imperativo:"Sustenta o Ganho de eficiência operacional pela constância e cuida do Clima do time. Base de previsibilidade da operação.",
+     colab:"Sua constância sustenta o resultado do todo — a Dengo confia em quem entrega sempre. O convite é ousar: propor a solução antes que peçam."},
+ AN:{forte:["Entrego o resultado combinado e além"],
+     estica:"Busco soluções e faço acontecer — decidir com 80% e agir sem esperar a perfeição.",
+     imperativo:"É o coração do imperativo nº1: eficiência operacional com planejamento e rigor. Também qualifica o Portfólio/posicionamento de preço pela análise.",
+     colab:"Planejamento e rigor são a sua assinatura — exatamente o imperativo nº1 da Dengo. Seu próximo nível é decidir mais rápido e confiar no 'bom o suficiente'."}
+};
+
 /* ===================== STORAGE LOCAL (cache do ambiente ativo) ===================== */
 function novoWs(){ return {id:null, nome:"", pin:null, departamentos:DEPTS_PADRAO.slice(), colabs:[], respostas:{}, notas:{}}; }
 function db(){
@@ -589,7 +634,7 @@ async function nuvemCarregarWorkspace(wsId){
     ]);
     const d = db();
     const ids = new Set(colabs.map(c=>c.id));
-    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
+    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
     d.notas = {}; colabs.forEach(c=>{ if(c.nota) d.notas[c.id]=c.nota; });
     d.respostas = {}; resps.forEach(r=>{ if(ids.has(r.colab_id)) d.respostas[r.colab_id] = {data:r.data, contagem:r.contagem}; });
     salvar(d);
@@ -600,7 +645,7 @@ async function nuvemUpsertColab(c, nota){
   if(!nuvemOn()) return;
   try{
     await sbFetch("colaboradores", {method:"POST", headers:sbHeaders({Prefer:"resolution=merge-duplicates"}),
-      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", workspace_id:gestorAtual?gestorAtual.id:c.workspace_id||null, criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
+      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||null, workspace_id:gestorAtual?gestorAtual.id:c.workspace_id||null, criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
   }catch(e){ toast("⚠️ Falha ao salvar na nuvem — dado mantido localmente."); }
 }
 async function nuvemDeleteColab(id){
@@ -682,10 +727,21 @@ function listarQuem(nomeEquipe){
   else{
     l.innerHTML = d.colabs.map(c=>{
       const done = d.respostas[c.id] ? " <span style='font-size:11px;color:var(--pl);'>(já respondeu — refaz e substitui)</span>" : "";
-      return `<button class="big-btn sec" onclick="iniciarQuiz('${c.id}')">${c.nome}<small>${c.cargo||""}${c.departamento?" • "+c.departamento:""}${done}</small></button>`;
+      return `<button class="big-btn sec" onclick="acessarColaborador('${c.id}')">${c.nome}<small>${c.cargo||""}${c.departamento?" • "+c.departamento:""}${done}</small></button>`;
     }).join("");
   }
   show("scr-quem");
+}
+
+const DIAS_RETESTE = 90;
+function diasDesde(r){ return Math.floor((Date.now()-new Date(r.data))/(1000*60*60*24)); }
+function acessarColaborador(id){
+  const d = db();
+  const c = d.colabs.find(x=>x.id===id);
+  if(!c){ alert("Colaborador não encontrado."); return; }
+  const r = d.respostas[id];
+  if(r){ quizAlvo = c; renderDevolutiva(c, r.contagem, r); show("scr-devolutiva"); }
+  else { iniciarQuiz(id); }
 }
 
 function iniciarQuiz(id){
@@ -782,16 +838,28 @@ function intensidade(contagem){
 }
 
 /* ===================== DEVOLUTIVA (colaborador) ===================== */
-function renderDevolutiva(c, contagem){
+function renderDevolutiva(c, contagem, r){
   const {principal, secundario} = perfilPrincipal(contagem);
   const P = perfis[principal], S = perfis[secundario];
   const blend = blends[principal+"-"+secundario] || "";
-  document.getElementById("devConteudo").innerHTML = `
+  const ac = autoconhecimento[principal];
+  const dg = dengoMap[principal];
+  const dataResp = r ? new Date(r.data) : new Date();
+  let controle = "";
+  if(r){
+    const faltam = DIAS_RETESTE - diasDesde(r);
+    controle = `<div class="card no-print" style="background:var(--soft);">
+      📄 <b>Este é o seu relatório salvo</b> (respondido em ${dataResp.toLocaleDateString("pt-BR")}). Você pode consultá-lo quando quiser.<br>` +
+      (faltam>0
+        ? `<span style="color:var(--muted);font-size:13px;">🔒 Novo teste disponível em <b>${faltam} dia(s)</b>. O reteste acontece a cada ${DIAS_RETESTE} dias, para manter a leitura consistente.</span>`
+        : `<button onclick="iniciarQuiz('${c.id}')">↺ Refazer meu teste</button>`) + `</div>`;
+  }
+  document.getElementById("devConteudo").innerHTML = controle + `
    <div class="hero" style="background:${P.grad}">
      <div style="font-size:13px;opacity:.85;">Devolutiva de ${c.nome}</div>
      <h2>${P.emoji} ${P.apelido}</h2>
      <div class="apelido">${P.frase} — com um toque de ${S.nome} ${S.emoji}</div>
-     <div class="chips"><span class="chip">Perfil ${P.disc}</span><span class="chip">${new Date().toLocaleDateString("pt-BR")}</span></div>
+     <div class="chips"><span class="chip">Perfil ${P.disc}</span><span class="chip">${dataResp.toLocaleDateString("pt-BR")}</span></div>
    </div>
    <div class="card">
      <p style="font-size:14px;line-height:1.6;">${P.essencia}</p>
@@ -808,8 +876,21 @@ function renderDevolutiva(c, contagem){
      <ul class="tight">${P.tratamento.map(s=>`<li>${s}</li>`).join("")}</ul>
      <h3>🚀 Como você entrega seus melhores resultados</h3>
      <ul class="tight">${P.entrega.map(s=>`<li>${s}</li>`).join("")}</ul>
-     <div class="box gold"><b>🌱 Sua confissão de crescimento</b> (para compartilhar na dinâmica, se quiser):<br><i>${P.partilha}</i></div>
-     <div class="box green">Nenhum bicho é melhor que outro — times fortes têm Águias, Pavões, Pombas e Corujas. O seu mapa mostra onde você brilha naturalmente e onde há espaço para crescer. Obrigado por se conhecer melhor com a gente! 💚</div>
+   </div>
+   <div class="card">
+     <h3>🧭 Autoconhecimento: o que me bloqueia</h3>
+     <div class="box red"><b>O que me bloqueia:</b> ${ac.bloqueio}</div>
+     <div class="box green"><b>Meu antídoto:</b> ${ac.antidoto}</div>
+     <div class="box gold"><b>🌱 Minha confissão de crescimento:</b> <i>${P.partilha}</i></div>
+     <div class="box blue"><b>💭 Pergunta para eu refletir:</b> ${ac.reflexao}</div>
+   </div>
+   <div class="card">
+     <h3>🏹 Como eu conecto com o jeito de ser Dengo</h3>
+     <p style="font-size:13.5px;line-height:1.55;">${dg.colab}</p>
+     <div class="box green"><b>Comportamentos essenciais que eu já vivo:</b> ${dg.forte.map(x=>"“"+x+"”").join(", ")}</div>
+     <div class="box gold"><b>Meu convite de crescimento:</b> ${dg.estica}</div>
+     <div class="box gray" style="font-size:12.5px;">Nosso objetivo: <b>${DENGO.objetivo}</b>. Nossa cultura: <i>${DENGO.cultura}</i>.</div>
+     <div class="box green">Nenhum bicho é melhor que outro — times fortes têm Águias, Pavões, Pombas e Corujas. Obrigado por se conhecer melhor com a gente! 💚</div>
    </div>`;
 }
 
@@ -1038,6 +1119,8 @@ function renderRelatorio(){
   const P = perfis[principal], S = perfis[secundario];
   const inten = intensidade(r.contagem);
   const blend = blends[principal+"-"+secundario] || "";
+  const dg = dengoMap[principal];
+  const ac = autoconhecimento[principal];
   area.innerHTML = `
    <div class="hero" style="background:${P.grad}">
      <div style="font-size:13px;opacity:.85;">Relatório confidencial do gestor</div>
@@ -1093,12 +1176,43 @@ function renderRelatorio(){
      <div class="insight">${insightLog}<br><br><b>Leitura para este perfil:</b> ${P.logistica}</div>
      <div class="insight">${insightProcesso}</div>
    </div>
+   <div class="card">
+     <h3>🏹 Conexão com a estratégia Dengo 2026</h3>
+     <div class="box green"><b>Comportamentos essenciais que já vive:</b> ${dg.forte.map(x=>"“"+x+"”").join(", ")}</div>
+     <div class="box blue"><b>Onde impulsiona o negócio:</b> ${dg.imperativo}</div>
+     <div class="box gold"><b>Comportamento a desenvolver:</b> ${dg.estica}</div>
+     <div class="box gray" style="font-size:12px;">Objetivo Dengo: <b>${DENGO.objetivo}</b> • Metas: ${DENGO.metas.join(" · ")} • Cultura: <i>${DENGO.cultura}</i></div>
+   </div>
+   <div class="card">
+     <h3>🧭 Plano de gestão e acompanhamento</h3>
+     <div class="box gray"><b>Sugestão automática (perfil × Dengo):</b>
+       <ul class="tight">
+         <li><b>Alavancar:</b> posicione ${c.nome.split(" ")[0]} onde "${dg.forte[0]}" gera valor (ver funções ideais acima).</li>
+         <li><b>Desenvolver:</b> ${dg.estica}</li>
+         <li><b>Cuidado de retenção:</b> o que desmotiva — ${P.desmotiva}</li>
+         <li><b>Esta semana:</b> ${P.acao}</li>
+         <li><b>Em 3 meses:</b> ${P.pdi}</li>
+         <li><b>Acompanhamento:</b> check-in quinzenal no estilo do 1-on-1 deste perfil e reavaliação de perfil em 90 dias.</li>
+       </ul>
+     </div>
+     <label>Plano de ação individual (editável, salvo na nuvem)</label>
+     <textarea id="planoGestor" placeholder="Objetivo do colaborador, combinados, prazos, próximos passos, vínculo com metas Dengo...">${c.plano||""}</textarea>
+     <button class="mini" onclick="salvarPlano('${id}')">💾 Salvar plano</button>
+   </div>
    <div class="card no-print">
      <h3>📝 Anotações do gestor (privadas, salvas na ferramenta)</h3>
      <textarea id="notaGestor" placeholder="Percepções, combinados do 1-on-1, evolução...">${d.notas[id]||""}</textarea>
      <button class="mini" onclick="salvarNota('${id}')">💾 Salvar anotação</button>
      <button class="mini sec" onclick="window.print()">🖨️ Imprimir / PDF</button>
    </div>`;
+}
+async function salvarPlano(id){
+  const d = db();
+  const c = d.colabs.find(x=>x.id===id);
+  c.plano = document.getElementById("planoGestor").value;
+  salvar(d);
+  await nuvemUpsertColab(c, d.notas[id]);
+  toast("Plano salvo!");
 }
 
 /* ===================== MAPA DO TIME ===================== */
@@ -1272,13 +1386,13 @@ function importarBackup(ev){
         respWsCtx = c.workspace_id;
         if(c.workspace_id) await nuvemCarregarWorkspace(c.workspace_id);
         const d = db();
-        if(!d.colabs.find(x=>x.id===cid)){ d.colabs.push({id:c.id,nome:c.nome,cargo:c.cargo||"",email:c.email||"",departamento:c.departamento||""}); salvar(d); }
-        iniciarQuiz(cid);
+        if(!d.colabs.find(x=>x.id===cid)){ d.colabs.push({id:c.id,nome:c.nome,cargo:c.cargo||"",email:c.email||"",departamento:c.departamento||"",plano:c.plano||""}); salvar(d); }
+        acessarColaborador(cid);
       } else { alert("Convite não encontrado. Peça um novo link ao gestor."); }
     } else {
       const d = db();
       const c = d.colabs.find(x=>x.id===cid);
-      if(c){ iniciarQuiz(cid); } else { alert("Convite não encontrado neste dispositivo."); }
+      if(c){ acessarColaborador(cid); } else { alert("Convite não encontrado neste dispositivo."); }
     }
   }
 })();
