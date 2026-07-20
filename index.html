@@ -634,7 +634,7 @@ async function nuvemCarregarWorkspace(wsId){
     ]);
     const d = db();
     const ids = new Set(colabs.map(c=>c.id));
-    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
+    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||"", pin_colab:c.pin_colab||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
     d.notas = {}; colabs.forEach(c=>{ if(c.nota) d.notas[c.id]=c.nota; });
     d.respostas = {}; resps.forEach(r=>{ if(ids.has(r.colab_id)) d.respostas[r.colab_id] = {data:r.data, contagem:r.contagem}; });
     salvar(d);
@@ -645,7 +645,7 @@ async function nuvemUpsertColab(c, nota){
   if(!nuvemOn()) return;
   try{
     await sbFetch("colaboradores", {method:"POST", headers:sbHeaders({Prefer:"resolution=merge-duplicates"}),
-      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||null, workspace_id:gestorAtual?gestorAtual.id:c.workspace_id||null, criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
+      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||null, pin_colab:c.pin_colab||null, workspace_id:gestorAtual?gestorAtual.id:c.workspace_id||null, criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
   }catch(e){ toast("⚠️ Falha ao salvar na nuvem — dado mantido localmente."); }
 }
 async function nuvemDeleteColab(id){
@@ -735,13 +735,30 @@ function listarQuem(nomeEquipe){
 
 const DIAS_RETESTE = 90;
 function diasDesde(r){ return Math.floor((Date.now()-new Date(r.data))/(1000*60*60*24)); }
-function acessarColaborador(id){
+async function acessarColaborador(id){
   const d = db();
   const c = d.colabs.find(x=>x.id===id);
   if(!c){ alert("Colaborador não encontrado."); return; }
   const r = d.respostas[id];
-  if(r){ quizAlvo = c; renderDevolutiva(c, r.contagem, r); show("scr-devolutiva"); }
-  else { iniciarQuiz(id); }
+  if(!r){ iniciarQuiz(id); return; }           // ainda não respondeu → faz o teste (PIN é criado ao final)
+  // Já respondeu → o relatório é pessoal e protegido por PIN individual
+  if(!c.pin_colab){
+    // Primeiro acesso de um relatório antigo (sem PIN): a própria pessoa cria agora
+    let p1 = prompt("🔒 Este relatório é pessoal.\n\nPrimeiro acesso: crie um PIN pessoal (mínimo 4 dígitos). Só você o terá — será pedido toda vez que abrir seu relatório:");
+    if(p1===null) return;
+    p1 = p1.trim();
+    if(p1.length<4){ alert("O PIN precisa de ao menos 4 dígitos."); return; }
+    const p2 = (prompt("Confirme seu PIN pessoal:")||"").trim();
+    if(p2!==p1){ alert("Os PINs não conferem. Tente novamente."); return; }
+    c.pin_colab = hashPin(p1); salvar(d);
+    await nuvemUpsertColab(c, d.notas[id]);
+    toast("PIN pessoal criado!");
+  } else {
+    const p = prompt("🔒 Digite o seu PIN pessoal para ver o seu relatório:");
+    if(p===null) return;
+    if(hashPin(p.trim())!==c.pin_colab){ alert("PIN incorreto. Este relatório é pessoal e protegido."); return; }
+  }
+  quizAlvo = c; renderDevolutiva(c, r.contagem, r); show("scr-devolutiva");
 }
 
 function iniciarQuiz(id){
@@ -785,6 +802,23 @@ async function enviarQuiz(){
   d.respostas[quizAlvo.id] = {data:new Date().toISOString(), contagem};
   salvar(d);
   await nuvemUpsertResposta(quizAlvo.id, d.respostas[quizAlvo.id]);
+  // Cria o PIN pessoal na primeira resposta (protege o relatório individual)
+  if(!quizAlvo.pin_colab){
+    let p1 = prompt("✅ Respostas registradas!\n\nAgora crie um PIN pessoal (mínimo 4 dígitos) para proteger o SEU relatório. Você vai usá-lo para reabri-lo depois — ninguém mais terá acesso:");
+    if(p1!==null){
+      p1 = p1.trim();
+      if(p1.length<4){ alert("PIN muito curto — você poderá defini-lo ao reabrir o relatório."); }
+      else {
+        const p2 = (prompt("Confirme seu PIN pessoal:")||"").trim();
+        if(p2===p1){
+          const cc = d.colabs.find(x=>x.id===quizAlvo.id) || quizAlvo;
+          cc.pin_colab = hashPin(p1); quizAlvo.pin_colab = cc.pin_colab; salvar(d);
+          await nuvemUpsertColab(cc, d.notas[quizAlvo.id]);
+          toast("PIN pessoal criado!");
+        } else { alert("Os PINs não conferem — você poderá defini-lo ao reabrir o relatório."); }
+      }
+    }
+  }
   renderDevolutiva(quizAlvo, contagem);
   show("scr-devolutiva");
 }
@@ -1032,6 +1066,14 @@ async function refazerResposta(id){
   await nuvemDeleteResposta(id);
   renderColabs(); renderSelects();
 }
+async function resetarPinColab(id){
+  if(!confirm("Redefinir o PIN pessoal deste colaborador? Ele criará um novo no próximo acesso ao relatório.")) return;
+  const d = db(); const c = d.colabs.find(x=>x.id===id);
+  c.pin_colab = ""; salvar(d);
+  await nuvemUpsertColab(c, d.notas[id]);
+  renderColabs();
+  toast("PIN pessoal redefinido — o colaborador criará um novo ao abrir o relatório.");
+}
 function linkDe(id){ const base = location.href.split("?")[0].split("#")[0]; return base + "?c=" + id; }
 function copiarLink(id){
   const url = linkDe(id);
@@ -1085,7 +1127,8 @@ function renderColabs(){
          ${c.email && !r?`<button class="mini" onclick="convidar('${c.id}')">✉️ Convidar</button>`:""}
          <button class="mini sec" onclick="iniciarQuiz('${c.id}')">▶ Responder</button>
          <button class="mini sec" onclick="copiarLink('${c.id}')">🔗</button>
-         ${r?`<button class="mini sec" onclick="refazerResposta('${c.id}')">↺</button>`:""}
+         ${r?`<button class="mini sec" onclick="refazerResposta('${c.id}')" title="Refazer o teste (override do gestor)">↺</button>`:""}
+         ${r&&c.pin_colab?`<button class="mini sec" onclick="resetarPinColab('${c.id}')" title="Redefinir o PIN pessoal do colaborador">🔑</button>`:""}
          <button class="mini danger" onclick="descadastrar('${c.id}')">✕</button>
        </td></tr>`;
    }).join("") + "</table>";
@@ -1386,7 +1429,7 @@ function importarBackup(ev){
         respWsCtx = c.workspace_id;
         if(c.workspace_id) await nuvemCarregarWorkspace(c.workspace_id);
         const d = db();
-        if(!d.colabs.find(x=>x.id===cid)){ d.colabs.push({id:c.id,nome:c.nome,cargo:c.cargo||"",email:c.email||"",departamento:c.departamento||"",plano:c.plano||""}); salvar(d); }
+        if(!d.colabs.find(x=>x.id===cid)){ d.colabs.push({id:c.id,nome:c.nome,cargo:c.cargo||"",email:c.email||"",departamento:c.departamento||"",plano:c.plano||"",pin_colab:c.pin_colab||""}); salvar(d); }
         acessarColaborador(cid);
       } else { alert("Convite não encontrado. Peça um novo link ao gestor."); }
     } else {
