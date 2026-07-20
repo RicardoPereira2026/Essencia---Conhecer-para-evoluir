@@ -98,7 +98,7 @@ ul.tight{margin:4px 0 10px 18px;padding:0;font-size:13.5px;line-height:1.65;}
 
 <!-- ==================== HOME ==================== -->
 <div class="screen active" id="scr-home">
-  <h1>🧭 Essência <span id="cloudBadge" class="tag" style="background:#8a93a5;vertical-align:middle;">💾 modo local</span> <span class="tag" style="background:#6b46c1;vertical-align:middle;">v6 · PIN pessoal</span></h1>
+  <h1>🧭 Essência <span id="cloudBadge" class="tag" style="background:#8a93a5;vertical-align:middle;">💾 modo local</span> <span class="tag" style="background:#6b46c1;vertical-align:middle;">v6.1 · PIN + vínculo</span></h1>
   <div class="sub"><b>Conhecer para evoluir.</b> Mapa de perfis comportamentais para conexão de equipe — descubra seus superpoderes e como você funciona melhor.</div>
   <div class="card">
     <button class="big-btn" onclick="irCodigoEquipe()">📝 Responder meu questionário
@@ -634,7 +634,7 @@ async function nuvemCarregarWorkspace(wsId){
     ]);
     const d = db();
     const ids = new Set(colabs.map(c=>c.id));
-    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||"", pin_colab:c.pin_colab||"", criado:c.criado, convidadoEm:c.convidado_em||undefined}));
+    d.colabs = colabs.map(c=>({id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||"", pin_colab:c.pin_colab||"", workspace_id:c.workspace_id||null, criado:c.criado, convidadoEm:c.convidado_em||undefined}));
     d.notas = {}; colabs.forEach(c=>{ if(c.nota) d.notas[c.id]=c.nota; });
     d.respostas = {}; resps.forEach(r=>{ if(ids.has(r.colab_id)) d.respostas[r.colab_id] = {data:r.data, contagem:r.contagem}; });
     salvar(d);
@@ -645,7 +645,7 @@ async function nuvemUpsertColab(c, nota){
   if(!nuvemOn()) return;
   try{
     await sbFetch("colaboradores", {method:"POST", headers:sbHeaders({Prefer:"resolution=merge-duplicates"}),
-      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||null, pin_colab:c.pin_colab||null, workspace_id:gestorAtual?gestorAtual.id:c.workspace_id||null, criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
+      body:JSON.stringify([{id:c.id, nome:c.nome, cargo:c.cargo||"", email:c.email||"", departamento:c.departamento||"", plano:c.plano||null, pin_colab:c.pin_colab||null, workspace_id:(c.workspace_id||(gestorAtual?gestorAtual.id:(respWsCtx||null))), criado:c.criado||new Date().toISOString(), convidado_em:c.convidadoEm||null, nota:nota||null}])});
   }catch(e){ toast("⚠️ Falha ao salvar na nuvem — dado mantido localmente."); }
 }
 async function nuvemDeleteColab(id){
@@ -1429,7 +1429,7 @@ function importarBackup(ev){
         respWsCtx = c.workspace_id;
         if(c.workspace_id) await nuvemCarregarWorkspace(c.workspace_id);
         const d = db();
-        if(!d.colabs.find(x=>x.id===cid)){ d.colabs.push({id:c.id,nome:c.nome,cargo:c.cargo||"",email:c.email||"",departamento:c.departamento||"",plano:c.plano||"",pin_colab:c.pin_colab||""}); salvar(d); }
+        if(!d.colabs.find(x=>x.id===cid)){ d.colabs.push({id:c.id,nome:c.nome,cargo:c.cargo||"",email:c.email||"",departamento:c.departamento||"",plano:c.plano||"",pin_colab:c.pin_colab||"",workspace_id:c.workspace_id||respWsCtx||null}); salvar(d); }
         acessarColaborador(cid);
       } else { alert("Convite não encontrado. Peça um novo link ao gestor."); }
     } else {
